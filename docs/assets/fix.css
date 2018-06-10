@@ -1,0 +1,10 @@
+/* fix sidebar collapse */
+.sidebar-nav ul.children ul.children a::before {
+  content: '- ';
+}
+.sidebar-nav ul.children ul.children {
+  display: none;
+}
+.sidebar-nav li.target + li > .children {
+  display: block;
+}

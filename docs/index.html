@@ -7,6 +7,7 @@
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/vue.css">
+  <link rel="stylesheet" href="assets/fix.css">
 </head>
 <body>
   <nav>
@@ -15,11 +16,33 @@
   <div id="app"></div>
   <script>
     window.$docsify = {
-      name: '',
-      repo: '',
-      homepage: 'homepage.md'
+      homepage: 'homepage.md',
+      maxLevel: 4
     }
   </script>
   <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+  <script>
+    // fix sidebar collapse
+    window.onload = function () {
+      let firstTitle = document.querySelectorAll('.sidebar-nav > ul > li:nth-child(odd)');
+      let secondTitle = document.querySelectorAll('.sidebar-nav > ul > li > .children > li:nth-child(odd)');
+      for (let li of firstTitle) {
+        li.onclick = function () {
+          closeCollapse();
+        }
+      }
+      for (let li of secondTitle) {
+        li.onclick = function (e) {
+          closeCollapse();
+          e.target.parentNode.classList.add('target');
+        }
+      }
+      function closeCollapse () {
+        for (let i of secondTitle) {
+          i.classList.remove('target');
+        }
+      }
+    }
+  </script>
 </body>
 </html>

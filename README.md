@@ -1,5 +1,5 @@
 [website here](https://Sanvvv.github.io/book)
 
-### start
+## start
 
-`docsify serve docs`
+$ docsify serve docs
