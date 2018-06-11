@@ -8,29 +8,6 @@
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/vue.css">
   <link rel="stylesheet" href="assets/fix.css">
-  <script>
-    // fix sidebar collapse
-    window.onload = function () {
-      let firstTitle = document.querySelectorAll('.sidebar-nav > ul > li:nth-child(odd)');
-      let secondTitle = document.querySelectorAll('.sidebar-nav > ul > li > .children > li:nth-child(odd)');
-      for (let li of firstTitle) {
-        li.onclick = function () {
-          closeCollapse();
-        }
-      }
-      for (let li of secondTitle) {
-        li.onclick = function (e) {
-          closeCollapse();
-          e.target.parentNode.classList.add('target');
-        }
-      }
-      function closeCollapse () {
-        for (let i of secondTitle) {
-          i.classList.remove('target');
-        }
-      }
-    }
-  </script>
 </head>
 <body>
   <nav>
@@ -40,7 +17,33 @@
   <script>
     window.$docsify = {
       homepage: 'homepage.md',
-      maxLevel: 4
+      maxLevel: 4,
+      plugins: [
+        function(hook, vm) {
+          hook.doneEach(function() {
+            let firstTitle = Docsify.dom.findAll('.sidebar-nav > ul > li:nth-child(odd)');
+            let secondTitle = Docsify.dom.findAll('.sidebar-nav > ul > li > .children > li:nth-child(odd)');
+            for (let li of firstTitle) {
+              li.onclick = function () {
+                closeCollapse();
+              }
+            }
+            for (let li of secondTitle) {
+              li.onclick = function (e) {
+                closeCollapse();
+                e.target.parentNode.classList.add('target');
+              }
+            }
+            function closeCollapse () {
+              for (let i of secondTitle) {
+                i.classList.remove('target');
+              }
+            }
+            console.log(Docsify.dom);
+            console.log(firstTitle);
+          })
+        }
+      ]
     }
   </script>
   <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
