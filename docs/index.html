@@ -22,25 +22,23 @@
         function(hook, vm) {
           hook.doneEach(function() {
             let firstTitle = Docsify.dom.findAll('.sidebar-nav > ul > li:nth-child(odd)');
-            let secondTitle = Docsify.dom.findAll('.sidebar-nav > ul > li > .children > li:nth-child(odd)');
+            let secondTitleLink = Docsify.dom.findAll('.sidebar-nav > ul > li > .children > li > .section-link');
             for (let li of firstTitle) {
               li.onclick = function () {
                 closeCollapse();
               }
             }
-            for (let li of secondTitle) {
-              li.onclick = function (e) {
+            for (let a of secondTitleLink) {
+              a.onclick = function (e) {
                 closeCollapse();
                 e.target.parentNode.classList.add('target');
               }
             }
             function closeCollapse () {
-              for (let i of secondTitle) {
-                i.classList.remove('target');
+              for (let a of secondTitleLink) {
+                a.parentNode.classList.remove('target');
               }
             }
-            console.log(Docsify.dom);
-            console.log(firstTitle);
           })
         }
       ]
