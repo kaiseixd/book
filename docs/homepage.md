@@ -4,3 +4,6 @@
 #### [JS](/posts/JS)
 #### [ES6](/posts/ES6)
 #### [tip](/posts/tip)
+#### [vue](/posts/vue)
+#### [interview](/posts/interview)
+#### [algorithm](/posts/algorithm)

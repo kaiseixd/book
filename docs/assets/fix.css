@@ -8,3 +8,26 @@
 .sidebar-nav li.target + li > .children {
   display: block;
 }
+
+/* fix font size */
+h1 {
+  font-size: 1.6rem !important;
+  border-bottom: 1px solid #ddd;
+  margin-top: 70px !important;
+  padding-bottom: 10px;
+}
+h2 {
+  font-size: 1.4rem !important;
+  border-bottom: 1px solid #ddd;
+  margin-top: 0 !important;
+  padding-bottom: 10px;
+}
+h3 {
+  font-size: 1.2rem !important;
+  margin-top: 0 !important;
+}
+h4 {
+  font-size: 1.0rem !important;
+  margin-top: 0 !important;
+}
+
