@@ -1,3 +1,43 @@
+# Vue
+## 数据绑定
+
+Vue 的数据绑定基于数据劫持，有两种实现 Object.defineProperty 和 Proxy
+
+### 优势
+
+1. 无需显示调用：数据劫持 + 发布订阅可以直接通知变化并驱动视图
+
+2. 可精确得知变化数据：由于劫持了 setter ，属性改变的时候可以精确获知 newVal ，就不需要额外的 diff 操作
+
+### 思路
+
+1. 利用Proxy或Object.defineProperty生成的Observer针对对象/对象的属性进行"劫持",在属性发生变化后通知订阅者
+2. 解析器Compile解析模板中的Directive(指令)，收集指令所依赖的方法和数据,等待数据变化然后进行渲染
+3. Watcher属于Observer和Compile桥梁,它将接收到的Observer产生的数据变化,并根据Compile提供的指令进行视图渲染,使得数据变化促使视图变化
+
+> 由于一次 defineProperty 只能定义一个属性，并且对于不同的 setter 和 getter 每次都要深入方法内部去修改，耦合严重，因此需要加入发布订阅模式
+
+> defineProperty 存在的问题：只能监听对象的属性、无法监听的数组的变化，这些在 Proxy 上都被解决
+
+### 实现
+
+```js
+let uid = 0
+class Dep {
+  constructor () {}
+}
+```
+
+## 数据传递
+### 组件通信
+
+1. 父子组件用 Props 通信
+2. 非父子组件用 Event Bus 通信
+3. Vuex 全局状态管理
+
+### Event Bus
+
+
 # 源码
 ## 数据驱动
 ### new Vue(option)
