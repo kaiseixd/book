@@ -1,3 +1,6 @@
+# 基础
+## null 和 undefined 的区别
+
 # 数组
 ## 方法
 ### sort
@@ -44,52 +47,19 @@ Array.prototype.concat.apply([], arrayLike)
 Array.from(arrayLike)
 ```
 
-# Map & Set
-## Map
-### 描述
-
-保存键值对
-
-以插入顺序迭代其元素，for...of 循环每次迭代返回一个 [key, value] 数组
-
-使用 "SameValueZero" 比较键是否相等（包括 NaN ，正负 0）
-
-### 与对象的区别
-
-- 对象的键只能是字符串或者 Symbols ，但是 Map 的键可以是任意值（包括对象和函数）
-- Map 可以通过 size 属性直接获取键值对个数
-- Map 可迭代，对象需要先获取它的键数组然后再迭代
-- 性能优势
-
-## Set
-### 描述
-
-允许存储任何类型的唯一值
-
-## WeakMap
-### 描述
-
-保存键值对，其中的键是弱引用的，必须为对象
-
-### 与 Map 的区别
-
-- 只能存放对象
-- 不可枚举，没有 forEach，没有 size （因为弱引用的关系，无法得到确定的结果）
-
-### 用法
-
-与 Dom 关联，并在不需要 Dom 的时候能够立即被销毁防止内存泄漏
-
-在构造函数里实现私有变量（保存 this 为键，通过 this 获取值），同时不用担心内存泄漏的问题
-
-## WeakSet
-### 描述
-
-允许将弱保持对象存储在一个集合中，并且每个对象只能出现一次
-
 # 函数
 
 js 中的函数是一等公民
+
+## this
+
+- 在全局环境中时指向 window
+- 直接调用函数时，指向 window ，严格模式中是 undefined
+- 作为对象的方法调用时指向对象本身
+- 在构造函数中指向实例
+- 使用 call bind apply 时指向第一个参数
+- 箭头函数中指向函数外部作用域中的 this（也可以理解为箭头函数没有 this）
+- getter/setter 的 this 指向调用时的对象（?）
 
 ## 原型
 ### prototype
@@ -217,7 +187,23 @@ function Child (name, age) {
 var F = function () {}
 F.prototype = Parent.prototype
 Child.prototype = new F()
+Child.prototype.constructor = Child
 ```
+
+### ES6 继承
+
+```js
+class Child extends Parent {
+  // ...
+}
+```
+
+#### 区别
+
+- class 内部定义的方法是不可枚举的
+- 不存在变量提升
+- es5 的继承，是先创造子类实例对象 this ，再讲父类的方法添加到 this 上，class 继承则是先创造父类实例的 this （所以必须先调用 super 方法），然后再用子类的构造函数修改 this
+- 子类的 `__proto__` 指向父类，子类原型的 `__proto__` 指向父类原型
 
 ## 闭包
 
@@ -276,7 +262,7 @@ e.stopPropagation()
 
 ### return false
 
-同时阻止默认行为和冒泡，只在 HTML 事件属性 和 DOM0 级事件处理方法中有效
+同时阻止默认行为和冒泡（其实是直接阻止传播），只在 HTML 事件属性 和 DOM0 级事件处理方法中有效
 
 ### 委托
 

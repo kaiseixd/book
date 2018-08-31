@@ -6,8 +6,16 @@
   display: none;
 }
 .sidebar-nav li.target + li > .children {
-  display: block;
+  display: block; 
 }
+
+/* .sidebar-nav > ul > ul > ul {
+  display: none;
+}
+
+.active ~ ul {
+  display: block !important;
+} */
 
 /* fix font size */
 h1 {

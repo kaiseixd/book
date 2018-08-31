@@ -157,7 +157,7 @@ h3::before {
 ## 盒模型
 
 - 元素在文档中会以矩形盒子显示，盒子中包含多个框，这些框由内-外分别是 content, padding, border, margin
-- 盒子的宽高默认为 content-box 的宽高，但是可以通过 -ox-sizing 属性修改为 border-box
+- 盒子的宽高默认为 content-box 的宽高，但是可以通过 box-sizing 属性修改为 border-box
 - 盒子的背景到 border-box 为止，但是可以通过 background-clip 属性修改为其他
 
 ## 常规流和包含块
