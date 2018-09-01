@@ -1,5 +1,27 @@
 # 基础
-## null 和 undefined 的区别
+## null/undefined
+
+- null 代表没有值（此处不应该有值，占位符），undefined 代表不存在的值（缺少值，未定义）
+- typeof、Number、Object.prototype.toString
+- undefined 是一个预定义的全局变量（但是不能赋为其他值），而 null 是关键字
+- JavaScript 使用 undefined 并且程序员应该使用 null
+- void 0 永远返回 undefined
+
+## tip
+### document.write
+
+将一个文本字符串写入由 document.open() 打开的一个文档流
+
+在关闭（已加载）的文档上调用 document.write 会自动调用 document.open，这将清空该文档的内容（并在写入完之后调用 document.close）
+
+### async/defer
+
+- async：加载完就执行；优先执行先加载完的脚本；
+- defer：页面加载和解析完毕后执行；按脚本在页面中出现的顺序依次执行；
+
+### 设计 undefined 的原因
+
+一开始像 java 一样，只设置了 null 表示无值，是一个对象，并且预期可以转换为数字 0 。但是 Brendan 觉得'无'值最好不是对象，并且由于错误处理机制，最好能转换成 NaN ，而不是 0 ，所以设计了 undefined 。
 
 # 数组
 ## 方法
@@ -46,6 +68,23 @@ Array.prototype.concat.apply([], arrayLike)
 // es6 方法，从一个类数组或可迭代对象中创建一个新的数组实例
 Array.from(arrayLike)
 ```
+
+# 对象
+## 方法
+### Object.prototype.toString
+
+原理：检索变量内部的 [[Class]] 属性
+
+## native/host objects
+### 原生对象
+
+与宿主无关，独立于宿主环境的 ECMAScript 实现提供的对象
+
+其中部分 native objects 是内置的（built-in），还有一些会在 js 的执行过程中创建
+
+### 宿主对象
+
+由宿主环境提供的对象，除上者之外都是
 
 # 函数
 
@@ -227,8 +266,60 @@ var currying = function(fun) {
 }
 ```
 
-# 判断类型
-## 数组
+## new
+
+## apply/call/bind
+
+以及实现
+
+# 类型
+## 类型转换
+
+[https://juejin.im/entry/584918612f301e005716add6]
+
+### toPrimitive
+
+### toString
+
+### valueOf
+
+### ==/===
+
+## 判断类型
+
+# DOM
+
+DOM模型用一个逻辑树来表示一个文档，树的每个分支的终点都是一个节点(node)，每个节点都包含着对象(objects)
+
+## load/DOMContentLoaded
+
+- DOMContentLoaded：浏览器已经完全加载了 HTML，DOM 树已经构建完毕，但是像是 `<img>` 和样式表等外部资源可能并没有下载完毕（由 document 对象触发）
+- load：浏览器已经加载了所有的资源（图像，样式表等）
+- beforeunload/unload：当用户离开页面时触发
+
+> DOMContentLoaded 事件必须等待其所属 script 之前的样式表加载解析完成才会触发
+
+### DOMContentLoaded 和脚本
+
+js 主线程和 ui 渲染线程是互斥的，浏览器在解析 HTML 时遇到了 script 标签就无法继续构建 DOM 树，所以该事件有可能在所有脚本执行完后触发
+
+外部脚本的加载（带 src 不带 async defer）也会暂停 DOM 树的构建
+
+> 互斥的原因是 js 运行结果可能会影响 ui 线程的结果，js 执行时 GUI 线程会被挂起，并将 GUI 更新保存在一个队列中
+
+Firefox, Chrome 和 Opera 会在 DOMContentLoaded 执行时自动补全表单
+
+### DOMContentLoaded 和样式表
+
+外部样式表虽然不会阻塞 DOM 解析，但是如果样式后有一个内联脚本，由于 js 可能需要获取 DOM 样式，就要等这个 CSS 加载完，而直到 css 加载完， js 执行完前都会阻塞 DOM 解析（css 阻塞 js，js 阻塞 DOM）
+
+### 判断页面加载情况
+
+document.readyState：
+
+- loading：仍在加载（DOMContentLoaded 触发之前）
+- interactive：文档已经完成加载，文档已被解析，但是诸如图像，样式表和框架之类的子资源仍在加载（DOMContentLoaded 触发）
+- complete：文档和子资源加载完成（load 触发）
 
 # 事件
 
@@ -269,7 +360,19 @@ e.stopPropagation()
 如果想要在大量子元素中单击任何一个都可以运行一段代码，可以将事件监听器设置在其父节点上
 
 # Ajax
-## 状态值
+
+[https://segmentfault.com/a/1190000004322487]
+
+## XMLHttpRequest
+
+```js
+var xhr = new XMLHttpRequest();
+xhr.onload = reqListener;
+xhr.open("get", "yourFile.txt", true);
+xhr.send();
+```
+
+### readyState
 
 0: (未初始化)还没有调用open()方法
 
@@ -281,7 +384,58 @@ e.stopPropagation()
 
 4: (完成)响应内容已经解析完成，用户可以调用
 
-# JS 运行原理
+### status
+
+服务器返回的状态码
+
+### send()
+
+- post 的时候可以传入 params，get/head 的时候参数一般设置为 null（即使传入也会忽略）
+- 发送同步请求的时候：
+  - xhr.timeout 必须为 0
+  - xhr.withCredentials 必须为 false
+  - xhr.responseType 必须为 ""
+- 可以发送的类型：
+  - ArrayBuffer
+  - Blob
+  - Document
+  - DOMString
+  - FormData
+  - null
+  - 参数的类型会影响 content-type header 的默认值
+
+### response
+
+- response：请求完成才会有值，否则会是 '' 或 null
+- responseText：只能是文本数据
+- responseXML：
+
+### overrideMimeType
+
+重写 response 的 content-type（用于指定数据类型，但是需要手动转换）
+
+### setRequestHeader
+
+`xhr.setRequestHeader(header, value)`
+
+### getAllResponseHeaders
+
+以及 getResponseHeader
+
+只能获取被视为 safe 的字段
+
+### withCredentials
+
+默认情况下，浏览器在发送跨域请求时，不能发送任何认证信息（credentials），如果需要发送 cookie 的话需要将该项设置为 true
+
+## xhr level2
+
+- timeout/ontimeout
+- xhr.send(formData)
+- responseType：'blob', 'arraybuffer' （处理二进制数据）
+- onprogress：event.loaded, event.total
+
+# JavaScript 运行原理
 
 引擎：调用栈（Call Stack）、Memory Heap
 
@@ -294,6 +448,7 @@ Web 环境：运行上下文（Runtime）、事件循环（Event Loop）
 Web APIs：DOM、XHR、setTimeout() & Node APIs
 
 ## 执行上下文
+
 
 # 模块
 ## 规范
