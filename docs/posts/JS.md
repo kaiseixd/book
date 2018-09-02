@@ -7,27 +7,83 @@
 - JavaScript 使用 undefined 并且程序员应该使用 null
 - void 0 永远返回 undefined
 
-## tip
-### document.write
-
-将一个文本字符串写入由 document.open() 打开的一个文档流
-
-在关闭（已加载）的文档上调用 document.write 会自动调用 document.open，这将清空该文档的内容（并在写入完之后调用 document.close）
-
-### async/defer
-
-- async：加载完就执行；优先执行先加载完的脚本；
-- defer：页面加载和解析完毕后执行；按脚本在页面中出现的顺序依次执行；
-
 ### 设计 undefined 的原因
 
 一开始像 java 一样，只设置了 null 表示无值，是一个对象，并且预期可以转换为数字 0 。但是 Brendan 觉得'无'值最好不是对象，并且由于错误处理机制，最好能转换成 NaN ，而不是 0 ，所以设计了 undefined 。
 
-# 数组
-## 方法
-### sort
+### typeof undefined
 
-V8 引擎的 sort 方法，在 10 以内是插入排序，10 以上（注释里写的是 22）是快速排序（由于快排不稳定，所以不太适合直接使用 sort 来排之前已经排序好的数据）
+typeof 一个并未声明的变量，不会报 ReferenceError，而是会返回 undefined
+
+> 当然如果访问对象的未定义属性的话也是返回 undefined，比如 window
+
+## NaN
+### isNaN
+
+只要不是数字的都返回 true（比如字符串、undefined、对象）
+
+但是能转换为数字的非 number 也能返回 false（比如 '1'、null、[1]）
+
+### Number.isNaN
+
+polyfill：`typeof n === 'number' && window.isNaN(n)`
+
+## Number
+
+js 的数字采用 IEEE 754 标准来实现
+
+### 属性
+
+- toFixed：限定小数位数
+- toPrecision：限定位数
+- Number.EPSILON
+- Number.MAX_VALUE
+- Number.MAX_SAFE_INTEGER：2 ** 53 - 1
+- Number.isInteger：（es6，polyfill：`typeof num === 'number' && num % 1 === 0`）
+
+### 进制
+
+- 16：0xf3
+- 8：0363, 0o363, 0O363
+- 2：0b101
+
+> es6 的严格模式不再支持类似 0363 的八进制格式，需要加上 o  
+
+### 正负0
+
+- `+0 === -0 -> true`
+- 使用 `1 / -0 === -Infinity` 或者 Object.is() 来区分两者
+- -0 数字转换成字符串，结果是 '0'；'-0' 转换成数字，结果是 -0
+
+## Object
+
+所有 typeof 返回值为 'object' 的对象，都包含一个内部属性 [[Class]]，无法直接访问，只能通过 `Object.prototype.toString` 来查看
+
+> 基础类型 null 和 undefined 内部有 [[Class]]，其他基础类型通过包装对象找到 [[Class]]
+
+### 属性
+
+- valueOf：获取对象的基本类型值
+
+### native/host objects
+#### 原生对象
+
+与宿主无关，独立于宿主环境的 ECMAScript 实现提供的对象
+
+其中部分 native objects 是内置的（built-in），还有一些会在 js 的执行过程中创建（Arguments）
+
+#### 宿主对象
+
+由宿主环境提供的对象，除上者之外都是
+
+## Array
+
+empty：删除数组中的项后会变成 empty，这个 empty slot 仍然会计入长度，而获取值的时候会返回 undefined
+
+### 属性
+
+- sort：V8 引擎的 sort 方法，在 10 以内是插入排序，10 以上（注释里写的是 22）是快速排序（由于快排不稳定，所以不太适合直接使用 sort 来排之前已经排序好的数据）
+- `Array.apply( null, { length: 2 } )` -> `Array(undefined, undefined)` -> `[undefined, undefined]`
 
 ### 转换为数组
 
@@ -36,13 +92,13 @@ Array.from(string)
 [].concat(...rest)
 ```
 
-## 类数组
+### 类数组
 
 拥有 length 属性，其它属性（索引）为非负整数（但是不具有数组所具有的方法，需要使用 Function.call 间接调用）
 
-包括：arguments、document.getElementsByTagName()
+包括：arguments、DOM 查询获取的 DOM 元素列表
 
-### 判断
+#### 判断
 
 ```js
 function isArrayLike(o) {
@@ -58,7 +114,7 @@ function isArrayLike(o) {
 }
 ```
 
-### 转化为数组
+#### 转化为数组
 
 ```js
 // 由于 IE9 以前的版本使用 COM 来实现 DOM ，所以不支持这种方法
@@ -69,22 +125,31 @@ Array.prototype.concat.apply([], arrayLike)
 Array.from(arrayLike)
 ```
 
-# 对象
-## 方法
-### Object.prototype.toString
+## tip
+### document.write()
 
-原理：检索变量内部的 [[Class]] 属性
+将一个文本字符串写入由 document.open() 打开的一个文档流
 
-## native/host objects
-### 原生对象
+在关闭（已加载）的文档上调用 document.write 会自动调用 document.open，这将清空该文档的内容（并在写入完之后调用 document.close）
 
-与宿主无关，独立于宿主环境的 ECMAScript 实现提供的对象
+### async/defer
 
-其中部分 native objects 是内置的（built-in），还有一些会在 js 的执行过程中创建
+- async：加载完就执行；优先执行先加载完的脚本；
+- defer：页面加载和解析完毕后执行；按脚本在页面中出现的顺序依次执行；
 
-### 宿主对象
+### JSON.stringify()
 
-由宿主环境提供的对象，除上者之外都是
+不安全的 JSON 值：undefined, function, symbol, 包含循环引用的对象（前三会返回 null）
+
+如果对象定义了 toJSON 方法，调用 JSON.stringify 时会首先调用该方法，然后用它的返回值来序列化（字符串化）
+
+> 如果一个对象含有非法 JSON 值的话可以这么做
+
+可以传入一个参数 replacer，是一个数组或者函数，用来指定对象序列化中哪些属性应该被处理，哪些应该被排除。是数组的话只包含要处理的属性名称。是函数的话会对对象本身以及其各属性均调用一次，传入的参数为键和值，返回的值为指定的键值，是 undefined 的话则忽略这个键
+
+### Object.create()
+
+使用 Object.create(null) 创建的对象的 [[Prototype]] 属性为 null，并且没有 valueOf() 和 toString() 方法，因此无法进行强制类型转换
 
 # 函数
 
@@ -273,19 +338,104 @@ var currying = function(fun) {
 以及实现
 
 # 类型
-## 类型转换
+
+对 js 来说，变量没有类型（可以随时持有任何类型的指），值才有，语言引擎不会要求变量总是持有与其初始值同类型的值
+
+## 内置类型
+
+null, undefined, boolean, number, string, object, symbol
+
+function 是内置类型 object 的子类型，它的内部属性 [[Call]] 让它成为可调用对象
+
+## 抽象值转换操作
+### ToString
+
+- null, undefined, boolean：'...'
+- symbol：'Symbol(...)'
+- number：遵循规范 9.8.1
+- object：返回 ToString(ToPrimitive) 的值
+
+9.8.1 对数值类型应用 ToString：
+
+1. 如果 m 是 NaN，返回字符串 "NaN"
+2. 如果 m 是 +0 或 -0，返回字符串 "0"
+3. 如果 m 小于零，返回连接 "-" 和 ToString (-m) 的字符串
+4. 如果 m 无限大，返回字符串 "Infinity"
+5. ...
+
+### ToNumber
+
+- true：1
+- false, null：0
+- 处理失败, undefined：NaN
+- object：调用 ToNumber(ToPrimitive) 的值
+
+### ToPrimitive
+
+如果是对象则返回调用内部方法 [[DefaultValue]] 的结果，否则直接返回值本身
+
+### [[DefaultValue]]
+
+当用数字 hint 调用 O 的内部方法 [[DefaultValue]]：
+
+```js
+if (get valueOf) {
+  var val = valueOf.call(O)
+  if (typeof val === Primitive) return val
+}
+if (get toString) {
+  var val toString.call(O)
+  if (typeof val === Primitive) return val
+}
+throw new TypeError('Cannot convert object to primitive value')
+```
+
+当用字符串 hint 调用 O 的内部方法 [[DefaultValue]]：
+
+```js
+if (get toString) {
+  var val = toString.call(O)
+  if (typeof val === Primitive) return val
+}
+if (get valueOf) {
+  var val valueOf.call(O)
+  if (typeof val === Primitive) return val
+}
+throw new TypeError('Cannot convert object to primitive value')
+```
+
+> 会先找对象上的 valueOf 或 toString，没有再从原型上找
+
+### ToBoolean
+
+falsy：undefined, null, false, +0, -0, NaN, ''
+
+## 强制类型转换
 
 [https://juejin.im/entry/584918612f301e005716add6]
 
-### toPrimitive
+强制类型转换总是返回基本类型值
 
-### toString
-
-### valueOf
+- to string：String, a.toString, a + ''
+- to number：Number, parseInt, parseFloat, +a, - -a, +new Date(), 涉及位运算符的操作会执行抽象操作 ToInt32
+- to boolean：Boolean, !!a, 条件判断, ||, &&
+- trick：~a.indexOf(...), ~~a, a | 0
 
 ### ==/===
 
+== 允许在比较时进行强制类型转换，而 === 不允许
+
+11.9.3：
+
+- 字符串和数字比较：总是将字符串 ToNumber
+- 与布尔值比较：== 两边的布尔值会被强制转换成数字
+- null 和 undefined 之间比较：true，与其他值比较都是 false（即使是假值）
+- 与对象比较：将对象 ToPrimitive
+
 ## 判断类型
+### NaN
+
+Number.isNaN
 
 # DOM
 
