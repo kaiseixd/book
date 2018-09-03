@@ -431,6 +431,26 @@ falsy：undefined, null, false, +0, -0, NaN, ''
 - 与布尔值比较：== 两边的布尔值会被强制转换成数字
 - null 和 undefined 之间比较：true，与其他值比较都是 false（即使是假值）
 - 与对象比较：将对象 ToPrimitive
+- false, '', [] 在 == 两边的时候都会被转换成 0 
+
+## 抽象关系比较
+
+比较双方都是字符串：
+
+1. 按字母顺序比较
+
+其他情况：
+
+1. 首先给双方调用 ToPrimitive
+2. 如果出现非字符串就根据 ToNumber 将双方转换成数字
+3. 出现 NaN 就返回 false
+4. 比较大小
+
+> 这里的 ToPrimitive 首先会调用 valueOf，但是一般不重写 valueOf 的话都是返回本身
+
+### 问题来了!
+
+- `{} >= {} -> true`：先将 {} 调用 ToPrimitive 转换成 '[object Object]'，再比较相等
 
 ## 判断类型
 ### NaN

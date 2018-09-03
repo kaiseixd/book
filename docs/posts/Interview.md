@@ -1,3 +1,67 @@
+# how browser works
+## 网络部分
+
+[1](https://segmentfault.com/a/1190000014348854#articleHeader13)
+[2](https://zhuanlan.zhihu.com/p/28946087)
+
+### DNS 域名解析
+
+浏览器 -> 本机层 -> 路由器缓存 -> 本地 DNS 服务器 -> DNS 服务器
+
+## 工作流程
+
+[render process](https://coolshell.cn/wp-content/uploads/2013/05/Render-Process-768x250.jpg)
+
+主流程：
+
+1. 解析（parse、construct）
+  - HTML/SVG/XHTML：构建 DOM tree
+  - CSS：构建 CSS Rule Tree
+  - JS：通过 api 来操作 DOM Tree 和 CSS Rule Tree 
+2. 呈现（render）：通过 DOM Tree 和 CSS Rule Tree 来构建 Rendering Tree
+  - 包含多个带有视觉属性的矩形
+  - Rendering Tree 并不等同于 DOM Tree
+  - Rendering Tree 上的每个节点会被附加 CSS Rule
+3. 布局（layout/reflow）：计算每个节点的位置
+4. 绘制（paint）：遍历呈现树，并由后端层将每个节点绘制出来
+
+阻塞关系：
+
+- js 在执行的时候会阻塞 DOM 解析（但是还是可以下载其他资源）
+- 没有 defer async 的 js 标签在下载的时候也会阻塞 DOM 解析
+- CSS 的解析不会阻塞 DOM 的解析，但是会阻塞 DOM 的渲染（因为需要合并成 Rendering Tree 之后渲染）
+- 但是 CSS 的解析会阻塞 js 执行（而 js 又会阻止其后的 DOM 解析）
+
+### DOM 解析
+
+[构建对象模型](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/constructing-the-object-model?hl=zh-cn)
+
+将文档解析成代表文档结构的节点树（解析树或者语法树）
+
+Bytes → characters → tokens → nodes → object model
+
+### CSS 解析
+
+通过与 DOM 解析相同的步骤获得 CSSOM
+
+### render -> layout -> paint
+
+[render tree construction](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/render-tree-construction?hl=zh-cn)
+
+1. 构建 Rendering Tree
+  - 遍历 DOM 树的每个可见节点
+  - 为其找到适配的 CSSOM 规则并应用它们
+  - 发射可见节点，连同其内容和样式
+2. 布局
+  - 从渲染树的根节点开始遍历
+  - 输出多个盒模型（精确地捕获每个元素在视口内的确切位置和尺寸：几何信息）
+3. 绘制（栅格化）
+  - 根据节点的计算样式和几何信息将其转换成屏幕上的实际像素
+
+### 渲染层合并 composite
+
+对页面中 DOM 元素的绘制是在多个层上进行的。在每个层上完成绘制过程之后，浏览器会将所有层按照合理的顺序合并成一个图层，然后显示在屏幕上
+
 # Web 性能优化
 ## 防止重复发送Ajax请求
 
@@ -108,6 +172,49 @@ io.disconnect()
 5. 少用iframe：搜索引擎不会抓取iframe中的内容
 6. 非装饰性图片必须加alt
 7. 提高网站速度：网站速度是搜索引擎排序的一个重要指标
+
+### 单页应用的 SEO 优化
+#### 单页应用
+
+- 优点
+  - 可以模拟原生应用体验，多端兼容，效果好（动画），前端负责显示后端负责数据存储和计算，减轻服务器压力
+- 缺点
+  - 由于页面的逻辑执行和组装时在浏览器上通过 js 完成和呈现的，页面内容不可抓取
+  - 由于使用 # 来实现不跳转更新页面，url 也不可抓取（会无视 # 后面的内容）
+  - 书签，需要程序来提供支持
+  - 初次加载比较耗时
+  - 需要代码实现前进、后退
+
+#### history api
+
+在不刷新页面的情况下，改变浏览器地址栏显示的 URL，用户使用 AJAX 来获取对应 URL 的内容，蜘蛛则直接根据 URL 抓取内容
+
+服务端需要返回如下结构的网页，并把要让搜索引擎收录的内容放在 noscript 中
+
+```html
+<html>
+  <body>
+    <section id='container'></section>
+    <noscript>
+      ... ...
+    </noscript>
+  </body>
+</html>
+```
+
+#### 以高效的方式实现两套页面
+
+当访问为SEO所需页面的时候，数据传输到了SEO 服务器完成渲染和组装然后吐给浏览器和蜘蛛，那么蜘蛛拿到的即是完全可见且融合了SPA的页面——landing页都是蜘蛛可见的，接下去用户的点击都是SPA的页面
+
+#### prerender?
+
+有待补充
+
+phantomjs 预渲染? preorder.io?
+
+#### 服务端渲染? 是不是就是第二种? SSR
+
+有待补充
 
 # Web 缓存机制
 
