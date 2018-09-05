@@ -1,3 +1,15 @@
+function _bind (fn, context, ...args) {
+  var context = context || window
+  return function () {
+    context._fn = fn
+    var res = context._fn(args)
+    delete context._fn
+    return res
+  }
+}
+
+
+
 let uid = 0;
 // 用于储存订阅者并发布消息
 class Dep {

@@ -125,6 +125,33 @@ Array.prototype.concat.apply([], arrayLike)
 Array.from(arrayLike)
 ```
 
+### 创建一个指定长度的空数组
+
+`Array.from({length:100})`, `Array.apply(null,{length:100})`, `[...Array(100)]`
+
+数组内容为下标：
+
+`Object.keys(Array.apply(null,{length:100}))`, `Array.from(Array(100).keys())`, `[...Array(100).keys()]`
+
+以及：
+
+```js
+Number.prototype[Symbol.iterator] = function() {
+    return {
+        v: 0,
+        e: this,
+        next() {
+            return {
+                value: this.v++,
+                done: this.v > this.e
+            }
+        }
+    }
+}
+
+[...100]
+```
+
 ## tip
 ### document.write()
 
@@ -333,9 +360,24 @@ var currying = function(fun) {
 
 ## new
 
-## apply/call/bind
+## call/apply/bind
 
 以及实现
+
+### bind
+
+不使用 call/apply 实现 bind
+
+```js
+function _bind (fn = () => {}, context = window) {
+  return (...args) => {
+    context._fn = fn
+    var res = context._fn(...args)
+    delete context._fn
+    return res
+  }
+}
+```
 
 # 类型
 
