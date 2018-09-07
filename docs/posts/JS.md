@@ -30,7 +30,7 @@ polyfill：`typeof n === 'number' && window.isNaN(n)`
 
 ## Number
 
-js 的数字采用 IEEE 754 标准来实现
+js 的数字采用 IEEE 754 标准来实现，是浮点型的
 
 ### 属性
 
