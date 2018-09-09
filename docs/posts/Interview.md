@@ -482,5 +482,21 @@ CSRF防御方法举例:
 1. 检查Referer字段（IE或低版本的浏览器中，Referer参数可以被伪造）
 2. 添加校验token
 
+# 框架
+## MVVM
+
+- Model：数据模型（可以理解为数据库持久化存储）
+- View： 界面（前端视图，html）
+- ViewModel：作为桥梁负责沟通 View 和 Model
+
+ViewModel 负责数据（view 和 model 同步）和业务的处理，对于前端来说，就是将 DOM 和数据同步更新，并且这个过程是自动的，不需要手动编写特殊用例，这样就能将 Model 和 View 分离，而 View 只负责处理数据显示界面。
+
+Vue 中的 ViewModel 就是整个数据绑定所实现的?
+
+### MVC
+
+- Controller：连接 Model 和 View  之间的业务逻辑控制器
+  - M -> C -> V, V -> C -> M
+
 # 兼容
 ## loading...

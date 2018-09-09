@@ -129,6 +129,14 @@ div::after {
 
 设置循环变量的那部分是一个父作用域，而循环体内部是一个单独的子作用域
 
+### 分号自动插入
+
+[so](https://stackoverflow.com/questions/2846283/what-are-the-rules-for-javascripts-automatic-semicolon-insertion-asi)
+
+### 过滤字符防XSS
+
+[so](https://stackoverflow.com/questions/7381974/which-characters-need-to-be-escaped-on-html)
+
 
 
 

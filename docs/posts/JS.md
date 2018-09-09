@@ -2,7 +2,7 @@
 ## null/undefined
 
 - null 代表没有值（此处不应该有值，占位符），undefined 代表不存在的值（缺少值，未定义）
-- typeof、Number、Object.prototype.toString
+- typeof、Number、Object.prototype.toString.call
 - undefined 是一个预定义的全局变量（但是不能赋为其他值），而 null 是关键字
 - JavaScript 使用 undefined 并且程序员应该使用 null
 - void 0 永远返回 undefined
@@ -20,9 +20,7 @@ typeof 一个并未声明的变量，不会报 ReferenceError，而是会返回 
 ## NaN
 ### isNaN
 
-只要不是数字的都返回 true（比如字符串、undefined、对象）
-
-但是能转换为数字的非 number 也能返回 false（比如 '1'、null、[1]）
+isNaN 会先将传递给它的值转换为数字类型，所以能被转换成 NaN 的字符串、对象、undefined 都会返回 true，而 '123'、[7]、[] 等都会返回 false
 
 ### Number.isNaN
 
@@ -79,6 +77,8 @@ js 的数字采用 IEEE 754 标准来实现，是浮点型的
 ## Array
 
 empty：删除数组中的项后会变成 empty，这个 empty slot 仍然会计入长度，而获取值的时候会返回 undefined
+
+数组的 length 不是 getter/setter
 
 ### 属性
 
@@ -663,6 +663,9 @@ Web APIs：DOM、XHR、setTimeout() & Node APIs
 
 
 # 模块
+
+模块化：将一个复杂的系统分解为多个模块以方便编码
+
 ## 规范
 ### AMD（Asyncchronous Module Definition）
 
@@ -674,7 +677,19 @@ Web APIs：DOM、XHR、setTimeout() & Node APIs
 
 是 SeaJS 在推广过程中对模块定义的规范化产出
 
+### UMD（Universal Module Definition）
+
+提供一个前后端跨平台的解决方案（支持 AMD 与 CommonJS 模块方式）
+
+实现：
+
+1. 先判断是否支持 Node.js 模块格式（exports 是否存在），存在则使用 Node.js 模块格式
+2. 再判断是否支持 AMD（define 是否存在），存在则使用 AMD 方式加载模块
+3. 前两个都不存在，则将模块公开到全局（window 或 global）
+
 ### CommonJS
+
+目前 Node.js 采用的规范
 
 - 每个模块内部，module 变量代表当前模块，所有模块都是 Module 的实例
 - module 的 exports 属性是对外的接口，加载某个模块，其实是加载该模块的 module.exports 属性

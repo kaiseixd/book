@@ -5,49 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+  <script src="https://cdn.bootcss.com/vue/2.5.16/vue.js"></script>
+  <script crossorigin src="https://cdn.bootcss.com/react/16.4.0/umd/react.development.js"></script>
+  <script crossorigin src="https://cdn.bootcss.com/react-dom/16.4.0/umd/react-dom.development.js"></script>
+  <script src="https://cdn.bootcss.com/babel-standalone/7.0.0-beta.3/babel.js"></script>
 </head>
 <body>
-  <div id="app">
-    <div @click="c">{{bird}}</div>
+  <div id="root">
+
   </div>
-  <script src="https://cdn.bootcss.com/vue/2.5.16/vue.js"></script>
-  <script>
-    var mix = {
-      data () {
-        return {
-          bird: {
-            a: {
-              a: 1,
-              b: 2
-            },
-            b: 2
-          }
-        }
-      }
-    }
-  
-    new Vue({
-      el: '#app',
-      mixins: [mix],
-      data () {
-        return {
-          bird: {
-            a: {
-              a: 1
-            },
-            c: 3
-          }
-        }
-      },
-      methods: {
-        c () {
-          delete this.bird.a
-          console.log(this.bird) 
-        }
-      }
-    })
 
-
+  <script type="text/babel">
+    const a = <span>123</span>
+    const element = <div>Heelo{a}</div>
+    ReactDOM.render(
+      element,
+      document.getElementById('root')
+    );
   </script>
 </body>
 </html>

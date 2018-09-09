@@ -76,6 +76,29 @@ $attrs：包含了父作用域中不作为 prop 被识别（不是 prop 都可�
 $listeners：包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器。它可以通过 v-on="$listeners" 传入内部组件——在创建更高层次的组件时非常有用。
 
 ## 组件
+
+文档：组件是可复用的 Vue 实例，且带有名字（大写会按驼峰命名法处理）
+
+```js
+// 注册组件，传入一个扩展过的构造器
+Vue.component('my-component', Vue.extend({ /* ... */ }))
+
+// 注册组件，传入一个选项对象 (自动调用 Vue.extend)
+Vue.component('my-component', { /* ... */ })
+
+// 获取注册的组件 (始终返回构造器)
+var MyComponent = Vue.component('my-component')
+
+new Vue({
+  el: '#app',
+  components: { 
+    'my-component-also-ok': MyComponent,
+    // 试了一下直接传一个对象也行...
+    'onlyTemplate': { template: '<div>123</div>' }
+  }
+})
+```
+
 ### :is
 
 用于动态组件，或者解决模板解析的限制问题（ul内必须为li等）
@@ -87,6 +110,24 @@ $listeners：包含了父作用域中的 (不含 .native 修饰器的) v-on 事�
   <tr is="my-row"></tr>
 </table>
 ```
+
+## 生命周期
+
+Vue 实例在被创建时经过的一系列初始化过程，并且在这个过程的不同阶段会执行对应的钩子函数
+
+### 钩子
+
+- `beforeCreate`：在实例初始化之后，数据观测（props、data、computed）和 event/watcher 事件配置（mixin?）之前被调用
+- `created`：实例创建完成后立即调用，此时已完成数据观测，属性和方法的运算，watch/event 事件回调（data、methods、props 等已经挂到实例上），但是还没开始挂载 DOM，$el 属性目前不可见
+- `beforeMount`：模板编译完成，但未挂载，无法获取 DOM，此时首次调用 render 函数
+- `mounted`：挂载完成，能获取 DOM
+- `beforeUpdate`
+- `updated`
+- `activated`
+- `deactivated`
+- `beforeDestroy`
+- `destroyed`：用于组件变更时的状态存储或内容释放
+- `errorCaptured`
 
 ## 混入
 
@@ -122,6 +163,8 @@ Vue.mixin({ ... })
 ```js
 // 全局自定义指令 v-focus
 Vue.directive('focus', { ... })
+// 第二个参数还是可以是函数简写（只在 bind 和 update 时触发?）
+Vue.directive('focus', function (el, binding) { expr })
 
 // 局部指令（作为组件选项）
 directives: {
@@ -139,10 +182,32 @@ directives: {
 
 ### 参数
 
-- el
-- binding
+- el：元素 DOM
+- binding：跟指令有关的对象
 - vnode
 - oldVnode
+
+> 除了 el 之外，其它参数都应该是只读的，切勿进行修改
+
+## 插件
+
+Vue.js 的插件应当有一个公开方法 `install(Vue, options)`，将插件要添加的部分写入其中
+
+之后通过 `Vue.use()` 使用插件（调用 `plugin.install(Vue)`）
+
+### 范围
+
+1. 添加全局方法或者属性
+2. 添加全局资源：指令/过滤器/过渡等
+3. 通过全局 mixin 方法添加一些组件选项
+4. 添加 Vue 实例方法，通过把它们添加到 Vue.prototype 上实现
+5. 一个库，提供自己的 API，同时提供上面提到的一个或多个功能
+
+## 渲染函数
+
+Vue.compile(template)
+
+有待补充
 
 ## 全局 API
 ### Vue.extend( options )
@@ -208,12 +273,183 @@ Vue 在内部会尝试对异步队列使用原生的 Promise.then 和 MessageCha
 
 响应式删除，并触发视图更新（delete 是不更新的），key 也可以是 array 的 index
 
-### Vue.directive( id, [definition] )
+### Vue.version
+
+提供字符串形式的 Vue 安装版本号
+
+## 选项/数据
+### data
+
+实例的数据对象，在实例创建时将会递归地把 data 的属性转换为 getter/setter（除了这种方式以及 Vue.set 之外，新增的对象或者属性都将不是响应式的）
+
+实例创建之后，可以通过 vm.$data 访问原始数据对象。Vue 实例也代理了 data 对象上所有的属性（以 _ 或 $ 开头的属性不会被代理，只能用 vm.$data 访问），因此访问 vm.a 等价于访问 vm.$data.a
+
+### props
+
+类型：Array<string> | Object
+
+验证可选属性：type, default, required, validator（默认 type）
+
+### propsData
+
+类型：{ [key: string]: any }
+
+在 new 创建的实例中传递 props（测试用?）
+
+### computed
+
+类型：{ [key: string]: Function | { get: Function, set: Function } }
+
+计算属性会被混入到 Vue 实例中，所有 getter 和 setter 的 this 上下文自动地绑定为 Vue 实例
+
+计算属性的结果会被缓存，除非依赖的响应式属性变化才会重新计算
+
+### methods
+
+类型：{ [key: string]: Function }
+
+可以通过 Vue 实例访问到这些方法，方法中的 this 自动绑定为 Vue 实例，所以如果方法是箭头函数的话 this 将会是父级作用域（实例所在作用域）上下文
+
+```js
+vm[key] = methods[key] == null ? noop : bind(methods[key], vm)
+```
+
+### watch
+
+类型：{ [key: string]: string | Function | Object | Array }
+
+键是需要观察的表达式，值是对应回调函数，也可以是方法名，或者包含选项的对象（选项：deep, immediate）
+
+Vue 实例将会在实例化时调用 $watch()，遍历 watch 对象的每一个属性
+
+## 选项/DOM
+### el
+
+类型：string | HTMLElement
+
+在由 new 创建的实例中指定挂在的 DOM，之后可由 `vm.$el` 访问
+
+如果在实例化时存在这个选项，实例将立即进入编译过程，否则，需要显式调用 vm.$mount() 手动开启编译
+
+> render 函数或 template 属性存在的话会替换挂载的元素，否则提取挂载 DOM 元素的 HTML 用作模板，此时必须使用 Runtime + Compiler 构建的 Vue 库
+
+## 选项/组合
+### parent
+
+类型：Vue 实例
+
+指定已创建的实例之父实例，在两者之间建立父子关系。子实例可以用 this.$parent 访问父实例，子实例被推入父实例的 $children 数组中。
+
+> 不太建议使用
+
+### extends
+
+类型：Object | Function
+
+允许声明扩展另一个组件(可以是一个简单的选项对象或构造函数)，而无需使用 Vue.extend。
+
+### provide/inject
+
+provide：Object | () => Object
+inject：Array<string> | { [key: string]: string | Symbol | Object }
+
+这对选项需要一起使用，以允许一个祖先组件向其所有子孙后代注入一个依赖，不论组件层次有多深，并在起上下游关系成立的时间里始终生效
+
+provide 对象包含提供给其子孙的属性
+
+inject 对象包含子组件注入的属性
+
+> provide 和 inject 主要为高阶插件/组件库提供用例，并不推荐直接用于应用程序代码中
+
+> provide 和 inject 绑定并不是可响应的。这是刻意为之的。然而，如果你传入了一个可监听的对象，那么其对象的属性还是可响应的。
+
+## 选项/其他
+### model
+
+允许一个自定义组件在使用 v-model 时定制 prop 和 event，默认情况下把 value 作为 prop，input 作为 event
+
+## 实例属性
+
+list：vm.$data, vm.$props, vm.$el, vm.$parent, vm.$root（根 Vue 实例）, vm.$children, vm.$isServer, vm.$refs
+
+### vm.$options
+
+实例初始化时的选项，在选项中包含自定义属性时有用
+
+### vm.$slots
+
+用来访问被插槽分发的内容。每个具名插槽 有其相应的属性 (例如：slot="foo" 中的内容将会在 vm.$slots.foo 中被找到)。default 属性包括了所有没有被包含在具名插槽中的节点。
+
+> 在使用渲染函数书写一个组件时有用
+
+### vm.$scopedSlots
+
+用来访问作用域插槽。对于包括 默认 slot 在内的每一个插槽，该对象都包含一个返回相应 VNode 的函数。
+
+> 在使用渲染函数开发一个组件时特别有用
+
+### vm.$attrs
+
+包含了父作用域中不作为 prop 被识别 (且获取) 的特性绑定 (class 和 style 除外)。当一个组件没有声明任何 prop 时，这里会包含所有父作用域的绑定 (class 和 style 除外)，并且可以通过 v-bind="$attrs" 传入内部组件。
+
+> 在创建更高层次的组件时非常有用
+
+### vm.$listeners
+
+包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器。它可以通过 v-on="$listeners" 传入内部组件
+
+> 在创建更高层次的组件时非常有用
 
 ## 实例方法/生命周期
 ### vm.$mount( [elementOrSelector] )
 
 手动挂载一个未挂载（没有收到 el 选项）的实例
+
+### vm.$forceUpdate
+
+迫使 Vue 实例重新渲染，仅影响实例本身和插入插槽内容的子组件
+
+## 指令
+### v-show
+
+切换元素的 display 属性，会触发过渡效果
+
+### v-if
+
+在切换时元素及它的数据绑定 / 组件被销毁并重建
+
+触发过渡效果，优先级比 v-for 低
+
+### v-bind
+
+修饰符：
+
+- .prop
+- .camel
+- .sync
+
+### v-cloak
+
+这个指令保持在元素上直到关联实例结束编译
+
+### v-once
+
+只渲染元素和组件一次。随后的重新渲染，元素/组件及其所有的子节点将被视为静态内容并跳过。这可以用于优化更新性能
+
+## 特殊特性
+### key
+
+主要用在 Vue 的虚拟 DOM 算法，在新旧 nodes 对比时辨识 VNodes。如果不使用 key，Vue 会使用一种最大限度减少动态元素并且尽可能的尝试修复/再利用相同类型元素的算法。使用 key，它会基于 key 的变化重新排列元素顺序，并且会移除 key 不存在的元素。
+
+它也可以用于强制替换元素/组件而不是重复使用它（触发钩子或者过渡）
+
+### ref
+
+ref 被用来给元素或子组件注册引用信息。引用信息将会注册在父组件的 $refs 对象上。如果在普通的 DOM 元素上使用，引用指向的就是 DOM 元素；如果用在子组件上，引用就指向组件实例
+
+### slot-scope
+
+用于将元素或组件表示为作用域插槽
 
 ## 备忘
 
