@@ -41,6 +41,84 @@
 
 允许将弱保持对象存储在一个集合中，并且每个对象只能出现一次
 
+# class
+## 基础
+### 静态方法
+
+如果在方法前加一个 static 关键字，就不会被实例继承，而是直接通过类来调用，其中的 this 也指向类本身
+
+父类的静态方法，可以被子类继承
+
+静态方法也是可以从super对象上调用的（super.xx）
+
+### 静态属性
+
+只能用下面这种方法定义
+
+```js
+class Foo {}
+Foo.prop = 1
+
+// 以下不行
+class Foo {
+  prop: 1,
+  static prop: 1
+}
+```
+
+### 实例属性的新提案
+
+类的实例属性可以用等式写入类的定义中（以前的话需要写在 constructor 里）
+
+静态属性：`static prop = 2`
+
+### point
+
+- class 内部定义的方法，可以在 Constructor.prototype 中访问到，但是是不可枚举的
+- 通过 new 命令生成实例时会自动调用 constructor 方法，如果没有显式定义，一个空的constructor方法会被默认添加
+- constructor 默认 return this（实例对象），如果有其他返回的对象就会在调用 new 时将其作为返回值，如果返回的不是对象则继续返回 this（new 的机制）
+- class 不可以直接调用
+- 不存在变量提升
+- 可以用来实现原生构造函数的继承，es5 实现不行是因为 `Array.apply(this)` 的时候会忽略传入的 this，这样就无法绑定内部属性
+
+## 继承
+
+`class Sub extends Sup`
+
+### super
+
+作为函数调用时表示父类的构造函数，但是调用时其内部 this 指的是子类，相当于 `Sup.prototype.constructor.call(this)`
+
+子类必须在constructor方法中调用super方法，否则新建实例时会报错。这是因为子类自己的this对象，必须先通过父类的构造函数完成塑造，得到与父类同样的实例属性和方法，然后再对其进行加工，加上子类自己的实例属性和方法。如果不调用super方法，子类就得不到this对象。
+
+ES5 的继承，实质是先创造子类的实例对象this，然后再将父类的方法添加到this上面（Parent.apply(this)）。ES6 的继承机制完全不同，实质是先创建父类的实例对象this（所以必须先调用super方法），然后再用子类的构造函数修改this。
+
+同理，在调用 super 之后才能使用 this 关键字。
+
+如果子类没有定义constructor方法，这个方法会被默认添加。（默认调用 constructor 以及其中的 super）
+
+作为对象时，在普通方法中，指向父类的原型对象（Sup.prototype），但是需要注意的是通过 super 调用父类的方法时（super.func()）其中的 this 指向的是子类实例；在静态方法中，指向父类，而不是父类原型（所以就可以调用到父类上的静态属性，不过其中的 this 依旧指向子类实例）。
+
+### prototype & __proto__
+
+class 拥有两条继承链
+
+子类的 `__proto__` 表示构造函数的继承，总是指向父类（而不是父类的原型！）
+
+子类 prototype 的 `__proto__` 表示方法的继承，总是指向父类的 prototype
+
+```js
+// B 的实例继承 A 的实例
+Object.setPrototypeOf(B.prototype, A.prototype);
+
+// B 继承 A 的静态属性
+Object.setPrototypeOf(B, A);
+```
+
+由于是这种实现，只要父类拥有 prototype 属性的话，就可以被子类以 extends 的方式继承，所以父类是函数也可以
+
+- question：函数实现的继承是不是没继承父类的静态属性？
+
 # 异步
 
 Javascript 本身并不是异步的，而 Javascript 程序是异步的，由其运行时环境提供，通过 event loop 实现

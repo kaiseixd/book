@@ -402,85 +402,92 @@ HttpOnly
 - GET的数据在 URL 中对所有人都是可见的。POST的数据不会显示在 URL 中。
 
 # 跨域
-## jsonp
+## 解决方法
+
+- iframe 嵌套，通过 hash 传参
+- 服务器代理
+- postMessage
+- jsonp
+- document.domain：需要父域和子域都设置
+- CORS
+
+### JSONP
 
 主要利用了`script`的开放策略：通过script标签引入一个js或者是一个其他后缀形式（如php，jsp等）的文件，此文件返回一个js函数的调用。缺点在于只支持get请求而且存在安全问题，可能会导致CSRF，因为请求的数据来源于其他网站，因为恶意攻击者可以利用这段代码进行请求，获取数据，有可能会泄露用户密码等重要信息。
 
+```js
+function jsonp (url, callback, success) {
+  let script = document.createElement('script')
+  script.src = url
+  script.async = true
+  script.type = 'text/javascript'
+  window[callback] = function (data) {
+    success && success(data)
+  }
+  document.body.appendChild(script)
+}
+```
+
+> 服务端返回一段 js：callback(data)
+
+### CORS
+
+浏览器一旦发现 AJAX 请求跨域，就会自动添加一些附加的头信息，只要服务器也实现了 CORS 接口，就可以实现跨域通信
+
+对于简单请求，浏览器直接发出 CORS 请求，只在头信息中添加一个 Origin 字段，表示请求的源（协议 + 域名 + 端口）
+
+如果不是简单请求就会发送预检请求，包含 Origin, Access-Control-Request-Method, Access-Control-Request-Headers 字段
+
+### CORS vs JSONP
+
+- JSONP的主要优势在于对浏览器的支持较好；虽然目前主流浏览器支持CORS，但IE10以下不支持CORS。
+- JSONP只能用于获取资源（即只读，类似于GET请求）；CORS支持所有类型的HTTP请求，功能完善。
+- JSONP的错误处理机制并不完善，我们没办法进行错误处理；而CORS可以通过onerror事件监听错误，并且浏览器控制台会看到报错信息，利于排查。
+
 ## 同源策略
 
-Cookie，iframe，AJAX同源
+同源策略限制了从同一个源加载的文档或脚本发起的跨源（处于不同域或端口） HTTP 请求。这是一个用于隔离潜在恶意文件的重要安全机制（防止 CSRF）。
 
-## CORS
+> 也可能是正常发起跨站请求但是结果被浏览器拦截，还有一些浏览器在 http 和 https 之间也算跨域
 
-关键在于服务器，如果服务器实现了CORS跨域的接口，那么就可以使用ajax(请求路径为绝对路径)进行跨域请求。CORS请求分为两种，一种是简单请求，一种是非简单请求。简单请求是指请求方法在`HEAD`,`GET`,`POST`三者之间并且请求头信息局限在
+### 预检请求
 
-- Accept
-- Accept-Language
-- Content-Language
+对于那些可能对服务器数据产生副作用的 HTTP 请求方法，浏览器必须首先使用 OPTIONS 方法发起预检请求，从而获知服务器是否允许该跨域请求。在预检请求的返回中，服务端也可以通知客户端，是否需要携带身份凭证。
 
+不会触发预检请求请求：
 
-- Content-Type：只限于三个值`application/x-www-form-urlencoded`、`multipart/form-data`、`text/plain`
-
-非简单请求请求头：
-
-**（1）Access-Control-Request-Method**
-
-该字段是必须的，用来列出浏览器的CORS请求会用到哪些HTTP方法
-
-**（2）Access-Control-Request-Headers**
-
-该字段是一个逗号分隔的字符串，指定浏览器CORS请求会额外发送的头信息字段
-
-执行简单请求的时候，浏览器会在请求头信息增加`origin`字段，服务器据此来判断请求域名是否在许可范围之内，来决定是否返回`Access-Control-Allow-Origin`字段。响应头有以下几种：
-
-**（1）Access-Control-Allow-Origin**
-
-该字段是必须的。它的值要么是请求时`Origin`字段的值，要么是一个`*`，表示接受任意域名的请求。
-
-**（2）Access-Control-Allow-Credentials**
-
-该字段可选。它的值是一个布尔值，表示是否允许发送Cookie。默认情况下，Cookie不包括在CORS请求之中。设为`true`，即表示服务器明确许可，Cookie可以包含在请求中，一起发给服务器。这个值也只能设为`true`，如果服务器不要浏览器发送Cookie，删除该字段即可。
-
-**（3）Access-Control-Expose-Headers**
-
-该字段可选。CORS请求时，`XMLHttpRequest`对象的`getResponseHeader()`方法只能拿到6个基本字段：`Cache-Control`、`Content-Language`、`Content-Type`、`Expires`、`Last-Modified`、`Pragma`。如果想拿到其他字段，就必须在`Access-Control-Expose-Headers`里面指定。
-
-  **(4)Access-Control-Max-Age**
-
-`Access-Control-Max-Age` 首部字段指明了预检请求的响应的有效时间。
-
-  **(5)Access-Control-Allow-Methods**
-
-`Access-Control-Allow-Methods` 首部字段用于预检请求的响应。其指明了实际请求所允许使用的 HTTP 方法。
-
-  **(6)Access-Control-Allow-Headers**
-
-`Access-Control-Allow-Headers`首部字段用于预检请求的响应。其指明了实际请求中允许携带的首部字段。
-
-## 其他方法
-
-`document.domin`(IE6,7配合iframe;IE6,7发送POST跨域请求),html5的`postMessage`,`window.name`等
+- 简单请求：GET, HEAD, POST
+- 安全首部字段：Accept, Accept-Language, Content-Language, Content-Type, DPR, DownLink, Save-Data, Viewport-Width, Width
+- 安全 Content-Type：text/plain, multipart/form-data, application/x-www-form-urlencoded
+- ...
 
 # 安全
 ## XSS & CSRF
 
-XSS（跨站脚本攻击），属于代码注入的一种，攻击者通过拼接 javascript 将代码注入网页中（，其他用户访问时就会受到这串代码的影响（比如请求外部服务器）
-
-CSRF（跨站请求伪造），冒充用户发起请求（不知情），完成一些违背用户行为的请求（预先构造请求参数，然后让用户提交这个构造好的请求，或者直接伪造身份提交请求），一般通过 XSS 来实现或者直接通过命令行模式伪造请求（通过合法验证即可）
-
 XSS 利用的是用户对指定网站的信任，CSRF 利用的是网站对用户网页浏览器的信任
 
-XSS 防御方法举例:
+### XSS
 
-1. 对一些关键字和特殊字符进行过滤(<>,,script等)，或对用户输入内容进行URL编码(encodeURIComponent);
+XSS（跨站脚本攻击），属于代码注入的一种，攻击者通过拼接 javascript 将代码注入网页中，对网页进行篡改，其他用户访问时就会受到这串代码的影响（比如请求外部服务器来暴露用户隐私数据，或者 CSRF）。
+
+#### XSS 防御方法
+
+1. 对一些关键字和特殊字符进行过滤(<, >, script等)，或对用户输入内容进行URL编码(encodeURIComponent);
 2. Cookie不要存放用户名和密码，对cookie信息进行MD5等算法散列存放，必要时可以将IP和cookie绑定;
 3. 不要使用 innerHTML
 4. 在设置Cookie时，加上HttpOnly参数
 
+### CSRF
+
+CSRF（跨站请求伪造），借助用户的 cookie 骗取服务器的信任，让用户发起请求，完成一些违背用户行为的请求（预先构造请求参数，然后让用户提交这个构造好的请求，或者直接伪造身份提交请求），一般通过 XSS 来实现或者直接通过命令行模式伪造请求（通过合法验证即可），或者直接在用户访问黑客编写的网站时提交请求。
+
+> 实际上攻击者什么数据都不能获取，只能悄悄地让用户给服务器发送请求
+
 CSRF防御方法举例:
 
-1. 检查Referer字段（IE或低版本的浏览器中，Referer参数可以被伪造）
-2. 添加校验token
+1. 验证 HTTP Referer 字段：Referer 表示该 HTTP 请求的来源地址，但是由于用户可以在浏览器中设置不提供 Referer，会影响部分用户的正常使用，并且低版本的浏览器中 Referer 可以被伪造。
+2. 在请求地址中添加 token 并验证：token 可以在用户登录后产生并放于 session 中，每次请求时把 token 从 session 中拿出，与请求中的 token 对比。问题是每次请求都需要附带 token，并且如果是论坛类的网站，在其中访问到黑客的网站，也会在地址中添加 token。
+3. 在 HTTP 头中自定义属性并验证：在 XMLHttpRequest 中添加 csrftoken header。
 
 # 框架
 ## MVVM
@@ -497,6 +504,17 @@ Vue 中的 ViewModel 就是整个数据绑定所实现的?
 
 - Controller：连接 Model 和 View  之间的业务逻辑控制器
   - M -> C -> V, V -> C -> M
+
+# 设计模式
+## 发布订阅模式
+
+发布订阅模式是最常用的一种观察者模式的实现
+
+## 观察者模式
+
+## 单例模式
+
+## 工厂模式
 
 # 兼容
 ## loading...
