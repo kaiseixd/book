@@ -1,1 +1,0 @@
-let fibonacci: (number|string)[] = [1, '1', 2, 3, 5];

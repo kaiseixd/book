@@ -1,3 +1,39 @@
+# 树的遍历
+## 深度优先
+
+```js
+// 前序遍历
+// 递归
+function _pre (node) {
+  if (node) {
+    console.log(node.value)
+    _pre(node.left)
+    _pre(node.right)
+  }
+}
+
+// 迭代
+function _pre (node) {
+
+}
+```
+
+## 广度优先
+
+```js
+function breadthTraversal (root) {
+  if (!root) return null
+  let queue = []
+  queue.push(root)
+  while (queue.length) {
+    let node = queue.shift()
+    console.log(node.value)
+    if (node.left) queue.push(node.left)
+    if (node.right) queue.push(node.right)
+  }
+}
+```
+
 # 排序
 ## 快速排序
 

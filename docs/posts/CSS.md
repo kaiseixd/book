@@ -1,3 +1,36 @@
+# todo
+
+[布局](https://github.com/zwwill/blog/issues/14)
+
+## flex
+
+设为 Flex 布局以后，子元素的float、clear和vertical-align属性将失效。
+
+使用 flex 布局的元素称为容器，其子元素称为项目（item）。容器存在水平主轴（main axis）和垂直交叉轴（cross axis），项目排在轴线上（沿着 cross axis）。
+
+### 容器属性
+
+- flex-direction：决定主轴方向（row）
+- flex-wrap：规定了轴线上的项目排不下的话如何换行（nowrap）
+- flex-flow：是 flex-direction 属性和 flex-wrap 属性的简写形式（row nowrap）
+- justify-content：规定了项目在 main axis 上的对齐方式（flex-start）
+- align-items：规定了项目在轴线上的对齐方式（stretch）
+- align-content：规定了多根轴线的对齐方式（如果只有一根就无效）（stretch：占满 cross axis）
+
+### 项目属性
+
+- order：定义项目的排列顺序，数字越小越靠前（0）
+- flex-grow：定义项目的放大比例（0：存在剩余空间也不放大）
+  - 设置了大于 0 的值之后就会按比例占据剩余空间
+  - 剩余空间指容器轴线长去除 flex-basis 之后的空间（grow 之后将按比例分配的空间加在自身 flex-basis 上）
+  - 不会缩小
+- flex-shrink：定义项目的缩小比例（1：空间不足会缩小）
+  - 同样是按超出空间计算，之后按比例减在自身 width 上，数值越高按比例减的越多
+- flex-basis：定义了在分配多余空间之前，项目占据的主轴空间（auto：默认和 width 一致）
+- flex：是 flex-grow, flex-shrink 和 flex-basis 的简写（0 1 0%），后 2 可省略
+  - 只填一个值的时候 flex-basis 是 0，所以不会把宽度计入剩余空间
+- align-self：让项目能拥有与 align-items 不同的对齐属性
+
 # 结构和层叠
 ## 特殊性
 
@@ -313,27 +346,3 @@ h3::before {
   - 绝对定位时相对于定位祖先的 padding-box
   - 其他情况相对于父元素的 content-box
   - 元素自身的位置是基于 margin-box
-
-# More
-## 重绘和回流
-
-- http://www.css88.com/archives/4996
-
-### 重绘（repaint）
-
-### 回流（reflow）
-
-- 当改变一个元素的布局相关属性导致其布局改变时，浏览器会重新计算页面的布局
-
-### 对策
-
-- 通过定位或者 transform 实现动画
-
-## IE hack & vendor prefix
-
-## Media Query
-
-
-
-
-
