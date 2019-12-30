@@ -22,10 +22,40 @@ https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures
 * 闭包指的是函数内部的变量能够访问到外部作用域，也就是创建这个函数时的作用域，中的所有变量。即使函数是在它的作用域之外的地方执行。
 
 ## 原型
+函数的 prototype 属性，是一个对象，拥有 constructor 属性指向构造函数。实例的 `__proto__` 会指向原型，也可以使用 `Object.getPrototypeOf` 获取原型。
 
+### 原型链
+读取实例的属性时，也会在原型中查找，如果还找不到会在原型的原型中查找，直到顶层（`Object.prototype.__proto__ === null`）。
+
+### 是继承吗
+委托可能更为恰当。
+
+### reference
+[JavaScript深入之从原型到原型链](https://github.com/mqyqingfeng/Blog/issues/2)
 
 ## 作用域
-https://github.com/mqyqingfeng/Blog/issues/3
+作用域规定了如何查找变量，也就是确定当前执行代码对变量的访问权限。
+JavaScript 是词法作用域，函数的作用域在函数定义的时候确定。
+
+## 执行上下文
+执行函数的时候会创建执行上下文，并压入 ECStack（execution context），执行完再弹出。栈底永远是 globalContext。
+
+执行上下文包含：
+1. 变量对象
+2. 作用域链
+3. this
+
+### 变量对象
+存储了在上下文中定义的变量和函数声明。
+进入该执行上下文时，变量对象变为活动对象，此时其中的变量可以访问。
+
+### 作用域链
+
+
+### reference
+[JavaScript深入之变量对象](https://github.com/mqyqingfeng/Blog/issues/5)
+
+## 继承
 
 ## event loop
 由浏览器（JavaScript Runtime）维护。Runtime 负责函数的压栈和出栈，JS Engine 负责执行栈顶函数。
@@ -54,7 +84,7 @@ task：
 1. promise
 2. MutationObserver
 
-microtask 只有一个 queue，
+microtask 只有一个 queue。
 
 ### rendering
 1. requestAnimationFrame callback
@@ -127,10 +157,19 @@ https://www.yuque.com/kaisei/note/hbnmnw
 
 ### 301和302的区别
 * 301：永久重定向，客户端可以对结果进行缓存，下次不必发这个请求（google.com 跳 www.google.com）
-* 302：临时重定向，需要请求新url但是不会被缓存（语义不如下面的明确）
+* 302：临时重定向，需要请求新url但是不会被缓存（需要指定cache-control或者expires才有缓存，并且语义不如下面的明确）
 * 303：临时重定向，并使用GET方法请求新url
-* 307：临时重定向（hsts跳转），并使用原方法请求新url（http 跳 https好像也是307）
-* refer：https://www.v2ex.com/t/382599
+  * 常用于将 post 请求重定向到 get 请求，如在 post 数据后导向上传成功页面
+* 307：临时重定向（hsts跳转），并使用原方法请求新url（用于 http 跳 https）
+  * 下次访问站点直接使用 https，而不是 http 再转 https（但是还是无法阻止第一次访问该网站时的 https 降级攻击）
+* 308：永久重定向，不允许将 post 请求重定向到 get 请求上
+
+#### 历史原因
+最开始浏览器实现 302 的时候分别实现成了 303 和 307 的效果，所以将它们改到 303 和 307，而 302 本身则被修订为不再需要维持原请求的方法。
+
+#### reference
+[HTTP 301 和 302 跳转的本质区别?](https://www.v2ex.com/t/382599)
+[HTTP 中的 301、302、303、307、308 响应状态码](https://zhuanlan.zhihu.com/p/60669395)
 
 ### get & post
 * get 参数有大小限制（因为是 url 传递），post 有多种编码
@@ -146,6 +185,11 @@ https://www.yuque.com/kaisei/note/hbnmnw
 * options：发送预检请求
 * trace：主要用于请求的测试和诊断
 * patch：部分资源更新，或者在资源不存在时创建一个
+
+## 安全
+### https协议降级攻击
+#### reference
+[HTTPS 协议降级攻击原理](https://zhuanlan.zhihu.com/p/22917510)
 
 # exercise
 ## 获取页面中的所有图片src
@@ -168,3 +212,9 @@ https://juejin.im/post/5a3e121451882533f01ec66d
 https://www.zhihu.com/question/29953354
 https://juejin.im/post/5a52f138f265da3e5b32a41b
 https://segmentfault.com/a/1190000015864670
+
+## 网络
+https://imququ.com/post/sth-about-switch-to-https.html
+https://ye11ow.gitbooks.io/http2-explained/content/part1.html
+https://www.cnblogs.com/vajoy/p/5341664.html
+http://www.alloyteam.com/2016/07/httphttp2-0spdyhttps-reading-this-is-enough/
