@@ -20,6 +20,7 @@
 https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures
 
 * 闭包指的是函数内部的变量能够访问到外部作用域，也就是创建这个函数时的作用域，中的所有变量。即使函数是在它的作用域之外的地方执行。
+* 函数的执行上下文在函数执行完以后销毁了，但是还是可以通过作用域链拿到变量对象。
 
 ## 原型
 函数的 prototype 属性，是一个对象，拥有 constructor 属性指向构造函数。实例的 `__proto__` 会指向原型，也可以使用 `Object.getPrototypeOf` 获取原型。
@@ -37,6 +38,19 @@ https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures
 作用域规定了如何查找变量，也就是确定当前执行代码对变量的访问权限。
 JavaScript 是词法作用域，函数的作用域在函数定义的时候确定。
 
+## 函数
+### 函数创建
+创建函数的时候，会保存所有父变量对象到内部属性 `[[scope]]` 中。
+
+### 函数执行
+1. 创建执行上下文，压入执行栈
+2. 复制 `[[scope]]` 创建作用域链
+3. 创建活动对象
+4. 将活动对象添加到作用域链的前端，此时作用于链 `Scope = [AO].concat([[scope]]);`
+
+## 作用域链
+查找变量的时候，会先从当前上下文的变量对象中找，没有则往父级的变量对象中找，一直到全局对象。这样由多个变量对象构成的链表就是作用域链。
+
 ## 执行上下文
 执行函数的时候会创建执行上下文，并压入 ECStack（execution context），执行完再弹出。栈底永远是 globalContext。
 
@@ -46,16 +60,21 @@ JavaScript 是词法作用域，函数的作用域在函数定义的时候确定
 3. this
 
 ### 变量对象
-存储了在上下文中定义的变量和函数声明。
+存储了在上下文中定义的变量和函数声明，只是规范或者引擎的实现，不可实际访问。
 进入该执行上下文时，变量对象变为活动对象，此时其中的变量可以访问。
 
-### 作用域链
-
+### 执行上下文的创建
+此时变量对象包括：
+1. 形参
+2. 函数声明：如果变量对象已经存在相同名称的属性，则完全替换这个属性
+3. 变量声明：如果变量名称跟已经声明的形式参数或函数相同，则变量声明不会干扰已经存在的这类属性
 
 ### reference
 [JavaScript深入之变量对象](https://github.com/mqyqingfeng/Blog/issues/5)
 
 ## 继承
+### reference
+[JavaScript深入之继承的多种方式和优缺点](https://github.com/mqyqingfeng/Blog/issues/16)
 
 ## event loop
 由浏览器（JavaScript Runtime）维护。Runtime 负责函数的压栈和出栈，JS Engine 负责执行栈顶函数。
@@ -110,6 +129,11 @@ microtask 只有一个 queue。
 
 ### reference
 [深入理解 JavaScript Event Loop](https://zhuanlan.zhihu.com/p/34229323)
+
+## 类数组
+### 调用方法
+1. `Array.prototype.call(arrayLike, ...params)`
+2. `Array.from(arrayLike)`
 
 # React
 ## hooks
@@ -171,25 +195,88 @@ https://www.yuque.com/kaisei/note/hbnmnw
 [HTTP 301 和 302 跳转的本质区别?](https://www.v2ex.com/t/382599)
 [HTTP 中的 301、302、303、307、308 响应状态码](https://zhuanlan.zhihu.com/p/60669395)
 
+### 什么是RESTful
+Representational State Transfer
+1. URI 指定了一个特定资源的地址
+2. 资源能以多种格式表现，客户端和服务端之间传递的是资源的表现层
+3. 客户端通过 HTTP 动词对服务器的资源进行状态转化操作
+
+#### reference
+[理解RESTful架构](https://www.ruanyifeng.com/blog/2011/09/restful.html)
+
 ### get & post
 * get 参数有大小限制（因为是 url 传递），post 有多种编码
 * get 请求可以缓存
 * 按照 RESTful 规范来说 get 一般是读取而 post 一般是创建
 
+### put & post
+* post 是非幂等而 put 幂等
+* post 的 URI 一般对应资源接收者比如 /articles，而 put 对应资源本身比如 /articles/486
+
 ### 列出请求方法
 * get：请求资源
 * post：提交实体，一般会导致服务器状态变化或者有副作用
-* put：替换目标资源为最新
+* put：替换目标资源为最新，资源不存在会创建
 * delete：删除目标资源
 * connect：？
 * options：发送预检请求
 * trace：主要用于请求的测试和诊断
 * patch：部分资源更新，或者在资源不存在时创建一个
 
+幂等的http请求：
+get、head、put、delete
+
+## https
+### http与https的优缺点
+
 ## 安全
 ### https协议降级攻击
 #### reference
 [HTTPS 协议降级攻击原理](https://zhuanlan.zhihu.com/p/22917510)
+
+# 实现
+## call、apply
+```js
+Function.prototype.call2 = function(context, ...args) {
+  context = context || window;
+  context.fn = this;
+  const result = context.fn(...args);
+  delete context.fn;
+  return result;
+}
+```
+
+## bind
+```js
+Function.prototype.bind2 = function(thisArg, ...bindedArgs) {
+  const self = this;
+  return function f(...args) {
+    // new
+    if (this instanceof f) {
+      Object.setPrototypeOf(this, self.prototype);
+      const res = self.call(this, ...bindedArgs, ...args);
+      if (typeof res === 'object') return res;
+      return this;
+    }
+    return self.call(this, ...bindedArgs, ...args);
+  };
+}
+```
+
+## new
+实现：
+1. 实例能访问构造函数中的属性
+2. 实例能访问到 ctor.prototype 中的属性
+
+```js
+function NEW(ctor, ...args) {
+  const obj = {}
+  const res = ctor.apply(obj, args)
+  Object.setPrototypeOf(obj, ctor.prototype)
+  if (typeof res === 'object') return res
+  else return obj
+}
+```
 
 # exercise
 ## 获取页面中的所有图片src
@@ -218,3 +305,9 @@ https://imququ.com/post/sth-about-switch-to-https.html
 https://ye11ow.gitbooks.io/http2-explained/content/part1.html
 https://www.cnblogs.com/vajoy/p/5341664.html
 http://www.alloyteam.com/2016/07/httphttp2-0spdyhttps-reading-this-is-enough/
+
+## this
+https://github.com/mqyqingfeng/Blog/issues/7
+
+## 设计模式
+https://mp.weixin.qq.com/s?__biz=MzUxMzcxMzE5Ng==&mid=2247489769&idx=1&sn=b22b3de10530a57647f08a6a2f68e37d&chksm=f951adaace2624bccd2bcbefd60e96d9b1dfa8a3afa4d7506aeb7cd7bf0f8ee6750b3aee2c2f&token=1607325351&lang=zh_CN#rd
