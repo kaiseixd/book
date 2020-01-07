@@ -1,167 +1,167 @@
-HTTP 有什么缺点
-HTTPS 有什么好处，有什么缺点，为什么
-HTTPS 连接建立过程
-HTTP2
-网络分层模型
-Promise
-React设计理念
-Vue设计理念
-react和vue的区别
-  主要区别就是对哪些部分需要渲染的判断吧，一个需要手动控制
-composite
-Cookie
-  封装
-继承
-vue-router原理
-在用https的情况下 还有什么安全隐患
-存储
-跨域
-动画
-  requestAnimationFrame
-输入URL流程 
-eventloop 流程
-水平垂直居中(4)
-bind、curry、memoization、new 
-FC(BFC、IFC) 
-DNS、CDN
-闭包原理
-RESTful
-nodejs 的父子进程是怎么进行通讯的
-多进程、cluster、pm2的原理
-301和302的区别
-babel
-排序
-中间件原理
-git
-stream
-数据结构
-算法
-性能优化
-TCP、UDP、HTTP
-RV生命周期
-数据绑定
-响应式更新
-VirtualDOM
-diff细节
-hash history router
-vuex
-redux
-react-redux
-nextTick
-setState
-RV组件通信
-deep clone
-co
-spa相关（首屏加载，白屏问题，路由转换，seo）
-设计模式
-  https://github.com/answershuto/DesignPattern/tree/master/src
-regexp
-fiber
-XSS、CSRF、CSP
-除以上之外的其他网络安全
-
-websocket
-了解什么linux的常用命令
-做过的项目，遇到什么问题
-哪些出彩的地方，有什么成果
-如何对项目进行监控，错误处理
-项目怎么解决移动端测试问题
-移动端自适应布局方案
-如何监控页面渲染的过程，知道花费多少时间 
-grid
-meta
-页面加载状态
-ajax
-为什么需要前后端分离
-PureComponent
-readline、repl、vm
-Vue.install
-debounce throttle
-canvas
-webgl
-node爬虫
-node搭建服务器
-解释Redux数据流向及原理，对单向数据流的看法
-圣杯、双飞翼布局
-垃圾回收机制(V8)
-隐式转换规则
-webpack
-  流程、配置
-移动端 1px 解决方案
-模板引擎实现原理
-post 和 get 的区别
-状态机
-ARQ 协议
-滑动窗口
-拥塞处理
-mvvm mvc的区别
-执行上下文
-作用域链
-keep-alive(http, tcp)
-重绘、回流
-一边定宽一边自适应
-左右定宽中间自适应
-等高布局(3)
-flex各属性以及flex: 1;
-异步循环
-React 异步更新的原理
-
-浏览器的每一帧做了什么
-大O 算法复杂度
-Vue.use
-尾递归
-关于资源下载和开始解析DOM的时机
-  load、DOMContentLoaded
-为什么说DOM操作慢
-class static
-阻塞关系
-类数组
-伪类和伪元素的区别
-require实现
-rem、em
-vw
-柯里化
-如果别人拿到了cookie是不是就能伪造登录？
-不会冒泡的事件
-node 的 http 做了什么
-koa和express的区别
-Runtime Only vs Compiler
-lazyload 判断是否处于可视区域
-dom, bom: navigator, screen, location, history
-bootstrap的布局实现
-当前主流浏览器/介绍其内核
-http 无状态 长轮询 短轮询 长连接 短连接
-JSON劫持
-css 动画以及与 js 动画性能比较
-请求头和响应头
-DataURL
-directive
-mixin
-二分查找
-require 查找规则
-使用 div 模拟 textarea
-tracert
-箭头函数
-arguments
-判断数组
-数组去重
-获取长度为 n 的数组
-类数组或可迭代对象转换为数组
-事件流
-作用域
-原型
-原型链
-css三角、扇形
-常见的替换元素
-行内元素有哪些？块级元素有哪些？ 空(void)元素有那些？
-可继承样式
-选择器权重
-盒模型
-margin合并
-清除浮动、闭合浮动
-定位位置基准(position)
-line-height继承的计算方式
-硬件加速
-行内元素 padding margin
-进制转换
-进程和线程的区别
+- [x] http与https的优缺点
+- [x] https如何解决问题
+- [x] HTTPS 连接建立过程
+- [ ] HTTP2
+- [ ] 网络分层模型
+- [ ] Promise
+- [ ] React设计理念
+- [ ] Vue设计理念
+- [ ] react和vue的区别
+- [ ]   主要区别就是对哪些部分需要渲染的判断吧，一个需要手动控制
+- [ ] composite
+- [ ] Cookie
+- [ ]   封装
+- [ ] 继承
+- [ ] vue-router原理
+- [ ] 在用https的情况下 还有什么安全隐患
+- [ ] 存储
+- [ ] 跨域
+- [ ] 动画
+- [ ]   requestAnimationFrame
+- [ ] 输入URL流程 
+- [ ] eventloop 流程
+- [x] 水平垂直居中(4)
+- [ ] bind、curry、memoization、new 
+- [ ] FC(BFC、IFC) 
+- [ ] DNS、CDN
+- [ ] 闭包原理
+- [ ] RESTful
+- [ ] nodejs 的父子进程是怎么进行通讯的
+- [ ] 多进程、cluster、pm2的原理
+- [ ] 301和302的区别
+- [ ] babel
+- [ ] 排序
+- [ ] 中间件原理
+- [ ] git
+- [ ] stream
+- [ ] 数据结构
+- [ ] 算法
+- [ ] 性能优化
+- [ ] TCP、UDP、HTTP
+- [ ] RV生命周期
+- [ ] 数据绑定
+- [ ] 响应式更新
+- [ ] VirtualDOM
+- [ ] diff细节
+- [ ] hash history router
+- [ ] vuex
+- [ ] redux
+- [ ] react-redux
+- [ ] nextTick
+- [ ] setState
+- [ ] RV组件通信
+- [ ] deep clone
+- [ ] co
+- [ ] spa相关（首屏加载，白屏问题，路由转换，seo）
+- [ ] 设计模式
+- [ ]   https://github.com/answershuto/DesignPattern/tree/master/src
+- [ ] regexp
+- [ ] fiber
+- [ ] XSS、CSRF、CSP
+- [ ] 除以上之外的其他网络安全
+- [ ] 
+- [ ] websocket
+- [ ] 了解什么linux的常用命令
+- [ ] 做过的项目，遇到什么问题
+- [ ] 哪些出彩的地方，有什么成果
+- [ ] 如何对项目进行监控，错误处理
+- [ ] 项目怎么解决移动端测试问题
+- [ ] 移动端自适应布局方案
+- [ ] 如何监控页面渲染的过程，知道花费多少时间 
+- [ ] grid
+- [ ] meta
+- [ ] 页面加载状态
+- [ ] ajax
+- [ ] 为什么需要前后端分离
+- [ ] PureComponent
+- [ ] readline、repl、vm
+- [ ] Vue.install
+- [ ] debounce throttle
+- [ ] canvas
+- [ ] webgl
+- [ ] node爬虫
+- [ ] node搭建服务器
+- [ ] 解释Redux数据流向及原理，对单向数据流的看法
+- [ ] 圣杯、双飞翼布局
+- [ ] 垃圾回收机制(V8)
+- [ ] 隐式转换规则
+- [ ] webpack
+- [ ]   流程、配置
+- [ ] 移动端 1px 解决方案
+- [ ] 模板引擎实现原理
+- [ ] post 和 get 的区别
+- [ ] 状态机
+- [ ] ARQ 协议
+- [ ] 滑动窗口
+- [ ] 拥塞处理
+- [ ] mvvm mvc的区别
+- [ ] 执行上下文
+- [ ] 作用域链
+- [ ] keep-alive(http, tcp)
+- [ ] 重绘、回流
+- [ ] 一边定宽一边自适应
+- [ ] 左右定宽中间自适应
+- [ ] 等高布局(3)
+- [ ] flex各属性以及flex: 1;
+- [ ] 异步循环
+- [ ] React 异步更新的原理
+- [ ] 
+- [ ] 浏览器的每一帧做了什么
+- [ ] 大O 算法复杂度
+- [ ] Vue.use
+- [ ] 尾递归
+- [ ] 关于资源下载和开始解析DOM的时机
+- [ ]   load、DOMContentLoaded
+- [ ] 为什么说DOM操作慢
+- [ ] class static
+- [ ] 阻塞关系
+- [ ] 类数组
+- [ ] 伪类和伪元素的区别
+- [ ] require实现
+- [ ] rem、em
+- [ ] vw
+- [ ] 柯里化
+- [ ] 如果别人拿到了cookie是不是就能伪造登录？
+- [ ] 不会冒泡的事件
+- [ ] node 的 http 做了什么
+- [ ] koa和express的区别
+- [ ] Runtime Only vs Compiler
+- [ ] lazyload 判断是否处于可视区域
+- [ ] dom, bom: navigator, screen, location, history
+- [ ] bootstrap的布局实现
+- [ ] 当前主流浏览器/介绍其内核
+- [ ] http 无状态 长轮询 短轮询 长连接 短连接
+- [ ] JSON劫持
+- [ ] css 动画以及与 js 动画性能比较
+- [ ] 请求头和响应头
+- [ ] DataURL
+- [ ] directive
+- [ ] mixin
+- [ ] 二分查找
+- [ ] require 查找规则
+- [ ] 使用 div 模拟 textarea
+- [ ] tracert
+- [ ] 箭头函数
+- [ ] arguments
+- [ ] 判断数组
+- [ ] 数组去重
+- [ ] 获取长度为 n 的数组
+- [ ] 类数组或可迭代对象转换为数组
+- [ ] 事件流
+- [ ] 作用域
+- [ ] 原型
+- [ ] 原型链
+- [ ] css三角、扇形
+- [ ] 常见的替换元素
+- [ ] 行内元素有哪些？块级元素有哪些？ 空(void)元素有那些？
+- [ ] 可继承样式
+- [ ] 选择器权重
+- [ ] 盒模型
+- [ ] margin合并
+- [ ] 清除浮动、闭合浮动
+- [ ] 定位位置基准(position)
+- [ ] line-height继承的计算方式
+- [ ] 硬件加速
+- [ ] 行内元素 padding margin
+- [ ] 进制转换
+- [ ] 进程和线程的区别
