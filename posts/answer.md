@@ -12,6 +12,11 @@
 * table-cell
 
 # js
+## DOM
+### 为什么说DOM操作慢
+可能会触发浏览器回流
+DOM属性庞杂
+
 ## this
 * this 引用的是函数执行的环境对象。
 * 箭头函数的 this，因为没有自身的 this，所以 this 只能根据作用域链往上层查找，直到找到一个绑定了 this 的函数作用域（即最靠近箭头函数的普通函数作用域，或者全局环境），并指向调用该普通函数的对象。
@@ -136,6 +141,13 @@ microtask 只有一个 queue。
 2. `Array.from(arrayLike)`
 
 # React
+## 对比vue
+React 是一个库而 Vue 是一个框架
+Vue 有很多的语法糖，并且有官方的路由库和状态管理库，而 React 将这些交给了社区
+React 通过 diff、fiber 等方式提高渲染性能，而 Vue 通过高效的模板渲染来提高性能（不太确定）
+setState vs 双向绑定
+jsx（React.createElement）、functional vs template
+
 ## hooks
 ### 如何实现
 实际上是将依赖放到了一个数组里，所以必须要在最顶层调用 hooks，根据顺序创建依赖。
@@ -171,6 +183,8 @@ useEffect 中的回调函数拿到的 state 是该次渲染的 state，而不是
 ## 缓存
 https://www.yuque.com/kaisei/note/hbnmnw
 
+## 渲染
+
 # 网络
 ## http
 ### 状态码
@@ -194,13 +208,21 @@ https://www.yuque.com/kaisei/note/hbnmnw
 [HTTP 中的 301、302、303、307、308 响应状态码](https://zhuanlan.zhihu.com/p/60669395)
 
 ### 什么是RESTful
-Representational State Transfer
+Representational State Transfer，表现层状态转化
 1. URI 指定了一个特定资源的地址
 2. 资源能以多种格式表现，客户端和服务端之间传递的是资源的表现层
 3. 客户端通过 HTTP 动词对服务器的资源进行状态转化操作
 
 #### reference
 [理解RESTful架构](https://www.ruanyifeng.com/blog/2011/09/restful.html)
+
+### URI
+统一资源标识符
+资源的独一无二的标识
+
+### URL
+统一资源定位符
+不仅是标识而且可以具体locate到这个资源
 
 ### get & post
 * get 参数有大小限制（因为是 url 传递），post 有多种编码
@@ -262,13 +284,16 @@ https：
 3. SignatureValue，数字签名值（首先用 HASH 函数生成证书摘要，再使用上级证书私钥加密）
 
 证书的验证：
-浏览器收到服务器发送的证书后，由于证书签名是通过签名算法和上级 CA 的私钥生成的，需要靠上级 CA 的公钥（在浏览器内置信任的证书，里面有公钥）解密得到摘要，并与证书内容的哈希值对比。
+浏览器收到服务器发送的证书后，由于证书签名是通过签名算法和上级 CA 的私钥生成的，需要靠上级 CA 的公钥（浏览器内置或者在操作系统中的证书，里面有公钥）解密得到摘要，并与证书内容的哈希值对比（防止证书被中间人篡改）。
 
 #### TLS握手
 1. TCP 连接建立后，客户端发送一个随机值，需要的协议和加密方式
 2. 服务端收到客户端的随机值，自己也产生一个随机值，并根据客户端需求的协议和加密方式来使用对应的方式，发送自己的证书（如果需要验证客户端证书需要说明）
 3. 客户端收到服务端的证书并验证（通过证书关系链从根 CA 验证）是否有效，验证通过会再生成一个随机值，通过服务端证书的公钥去加密这个随机值并发送给服务端，如果服务端需要验证客户端证书的话会附带证书
 4. 服务端收到加密过的随机值并使用私钥解密获得第三个随机值，这时候两端都拥有了三个随机值，可以通过这三个随机值按照之前约定的加密方式生成密钥，接下来的通信就可以通过该密钥来加密解密
+
+#### reference
+[图解 HTTPS：Charles 捕获 HTTPS 的原理](https://github.com/youngwind/blog/issues/108)
 
 ## http2
 * 二进制传输：引入了新的编码机制，所有传输的数据都会被分割，并采用二进制格式编码
@@ -359,3 +384,6 @@ https://github.com/mqyqingfeng/Blog/issues/7
 
 ## 设计模式
 https://mp.weixin.qq.com/s?__biz=MzUxMzcxMzE5Ng==&mid=2247489769&idx=1&sn=b22b3de10530a57647f08a6a2f68e37d&chksm=f951adaace2624bccd2bcbefd60e96d9b1dfa8a3afa4d7506aeb7cd7bf0f8ee6750b3aee2c2f&token=1607325351&lang=zh_CN#rd
+
+## 堆
+https://juejin.im/post/5c1ae6545188256a272a9cee

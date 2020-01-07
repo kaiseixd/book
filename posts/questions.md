@@ -3,32 +3,30 @@
 - [x] HTTPS 连接建立过程
 - [ ] HTTP2
 - [ ] 网络分层模型
+- [x] 缓存
 - [ ] Promise
 - [ ] React设计理念
-- [ ] Vue设计理念
-- [ ] react和vue的区别
-- [ ]   主要区别就是对哪些部分需要渲染的判断吧，一个需要手动控制
+- [ ] vue3.0
+- [ ] concurrent mode
+- [ ] fiber
+- [ ] hooks
+- [x] react和vue的区别
 - [ ] composite
 - [ ] Cookie
-- [ ]   封装
-- [ ] 继承
-- [ ] vue-router原理
-- [ ] 在用https的情况下 还有什么安全隐患
+- [x] 继承
+- [x] 在用https的情况下 还有什么安全隐患
 - [ ] 存储
 - [ ] 跨域
-- [ ] 动画
-- [ ]   requestAnimationFrame
+- [ ] 动画 requestAnimationFrame
 - [ ] 输入URL流程 
-- [ ] eventloop 流程
+- [x] eventloop 流程
 - [x] 水平垂直居中(4)
 - [ ] bind、curry、memoization、new 
 - [ ] FC(BFC、IFC) 
 - [ ] DNS、CDN
-- [ ] 闭包原理
-- [ ] RESTful
-- [ ] nodejs 的父子进程是怎么进行通讯的
-- [ ] 多进程、cluster、pm2的原理
-- [ ] 301和302的区别
+- [x] 闭包原理
+- [x] RESTful
+- [x] 301和302的区别
 - [ ] babel
 - [ ] 排序
 - [ ] 中间件原理
@@ -44,7 +42,6 @@
 - [ ] VirtualDOM
 - [ ] diff细节
 - [ ] hash history router
-- [ ] vuex
 - [ ] redux
 - [ ] react-redux
 - [ ] nextTick
@@ -53,13 +50,11 @@
 - [ ] deep clone
 - [ ] co
 - [ ] spa相关（首屏加载，白屏问题，路由转换，seo）
-- [ ] 设计模式
-- [ ]   https://github.com/answershuto/DesignPattern/tree/master/src
+- [ ] 设计模式 https://github.com/answershuto/DesignPattern/tree/master/src
 - [ ] regexp
-- [ ] fiber
 - [ ] XSS、CSRF、CSP
 - [ ] 除以上之外的其他网络安全
-- [ ] 
+
 - [ ] websocket
 - [ ] 了解什么linux的常用命令
 - [ ] 做过的项目，遇到什么问题
@@ -74,19 +69,15 @@
 - [ ] ajax
 - [ ] 为什么需要前后端分离
 - [ ] PureComponent
-- [ ] readline、repl、vm
-- [ ] Vue.install
 - [ ] debounce throttle
 - [ ] canvas
-- [ ] webgl
 - [ ] node爬虫
 - [ ] node搭建服务器
 - [ ] 解释Redux数据流向及原理，对单向数据流的看法
 - [ ] 圣杯、双飞翼布局
 - [ ] 垃圾回收机制(V8)
 - [ ] 隐式转换规则
-- [ ] webpack
-- [ ]   流程、配置
+- [ ] webpack：流程、配置
 - [ ] 移动端 1px 解决方案
 - [ ] 模板引擎实现原理
 - [ ] post 和 get 的区别
@@ -95,8 +86,8 @@
 - [ ] 滑动窗口
 - [ ] 拥塞处理
 - [ ] mvvm mvc的区别
-- [ ] 执行上下文
-- [ ] 作用域链
+- [x] 执行上下文
+- [x] 作用域链
 - [ ] keep-alive(http, tcp)
 - [ ] 重绘、回流
 - [ ] 一边定宽一边自适应
@@ -105,14 +96,14 @@
 - [ ] flex各属性以及flex: 1;
 - [ ] 异步循环
 - [ ] React 异步更新的原理
-- [ ] 
+
+- [ ] 浏览器渲染流程
 - [ ] 浏览器的每一帧做了什么
 - [ ] 大O 算法复杂度
 - [ ] Vue.use
 - [ ] 尾递归
-- [ ] 关于资源下载和开始解析DOM的时机
-- [ ]   load、DOMContentLoaded
-- [ ] 为什么说DOM操作慢
+- [ ] 关于资源下载和开始解析DOM的时机，load、DOMContentLoaded
+- [x] 为什么说DOM操作慢
 - [ ] class static
 - [ ] 阻塞关系
 - [ ] 类数组
@@ -165,3 +156,5 @@
 - [ ] 行内元素 padding margin
 - [ ] 进制转换
 - [ ] 进程和线程的区别
+- [ ] nodejs 的父子进程是怎么进行通讯的
+- [ ] 多进程、cluster、pm2的原理
