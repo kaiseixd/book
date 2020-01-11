@@ -17,7 +17,6 @@
 - [x] 在用https的情况下 还有什么安全隐患
 - [ ] 存储
 - [ ] 跨域
-- [ ] 动画 requestAnimationFrame
 - [ ] 输入URL流程 
 - [x] eventloop 流程
 - [x] 水平垂直居中(4)
@@ -118,7 +117,7 @@
 - [ ] koa和express的区别
 - [ ] Runtime Only vs Compiler
 - [ ] lazyload 判断是否处于可视区域
-- [ ] dom, bom: navigator, screen, location, history
+- [x] dom, bom: navigator, screen, location, history
 - [ ] bootstrap的布局实现
 - [ ] 当前主流浏览器/介绍其内核
 - [ ] http 无状态 长轮询 短轮询 长连接 短连接
@@ -138,10 +137,10 @@
 - [ ] 数组去重
 - [ ] 获取长度为 n 的数组
 - [ ] 类数组或可迭代对象转换为数组
-- [ ] 事件流
-- [ ] 作用域
-- [ ] 原型
-- [ ] 原型链
+- [x] 事件流
+- [x] 作用域
+- [x] 原型
+- [x] 原型链
 - [ ] css三角、扇形
 - [ ] 常见的替换元素
 - [ ] 行内元素有哪些？块级元素有哪些？ 空(void)元素有那些？

@@ -12,7 +12,102 @@
 * table-cell
 
 # js
+## BOM
+browser object model（浏览器提供的除js内置api外的api）
+
+### screen
+- width / height（屏幕大小）
+- colorDepth（色深）
+
+### history
+- length
+- pushState(state, pageTitle, url)
+  - 通过 window.onpopstate 在浏览器后退时把页面改回原来 url 对应的内容
+  - 然后通过 ajax 请求数据并更新内容（实现 url 改变但页面不刷新）
+- replaceState
+- go(number) / back / forward
+
+### location
+- hash：#右边的内容
+  - onhashchange
+  - hash 改变时前进后退按钮也会有记录
+  - hash 部分不会发往服务器
+- host：ip + port
+- hostname：ip
+- href：total
+- origin：protocol + host
+- pathname：第一个 / 后面的内容到 ? 为止
+- port：port
+- protocol：protocol
+- search：? 后面的内容到 # 为止
+- assign()
+- replace()
+
+### navigator
+- userAgent
+
+### window
+- name
+- opener：指向用 window.open 进入当前页面的页面的 window
+- open()：打开一个页面
+- scrollBy / scrollTo
+- status
+- window.document.title
+- getComputedStyle()
+- blur() / focus()
+
 ## DOM
+### 属性节点
+hasAttribute, getAttribute, setAttribute, removeAttribute, dataset
+
+### 文本节点
+```js
+innerText // 不能返回 script 标签里面的源码，忽略多余的空白并试图保留表格格式，只保留换行符
+textContent // 保留全部的空白和换行等文本格式
+```
+
+### 遍历节点
+```js
+parentNode // 返回当前结点的父节点
+offsetParent // 返回的是离当前结点最近的有定位的父节点
+
+childNodes // 返回当前结点的全部子节点，包括属性??和文本
+children // 只返回子元素集合，不包括文本
+firstElementChild // 元素的第一个子元素节点
+lastElementChild // 表示元素的最后一个子元素节点
+
+nextSibling
+nextElementSibling
+previousSibling
+previousElementSibling
+```
+
+### 操作 CSS 样式
+```js
+style // 返回 CSSStyleDeclaration 对象，包含元素所有样式（默认值为 ''），只能获得元素的行内样式
+getComputedStyle(element, [pseudoElt]) // 返回一个对象，该对象在应用活动样式表并解析这些值可能包含的任何基本计算后报告元素的所有CSS属性的值
+className // 最好还是通过修改 className 来 toggle 样式
+```
+
+### 构造元素节点
+```js
+document.createElement()
+document.createTextNode()
+document.createComment()
+document.createDocumentFragment()
+node.cloneNode(true) // 传入 true 的话拷贝自身加子节点，传入 false 只拷贝自身
+```
+
+### 操作节点
+```js
+parent.appendChild(node)
+parent.insertBefore(node, siblingNode)
+element.insertAdjacentHTML(position, text) // 将指定的文本解析为HTML或XML，并将结果节点插入到DOM树中的指定位置。它不会重新解析它正在使用的元素，因此它不会破坏元素内的现有元素。这避免了额外的序列化步骤，使其比直接innerHTML操作更快。
+
+parent.removeChild(siblingNode)
+parent.replaceChild(node, siblingNode)
+```
+
 ### 为什么说DOM操作慢
 可能会触发浏览器回流
 DOM属性庞杂
@@ -49,12 +144,13 @@ JavaScript 是词法作用域，函数的作用域在函数定义的时候确定
 
 ### 函数执行
 1. 创建执行上下文，压入执行栈
-2. 复制 `[[scope]]` 创建作用域链
-3. 创建活动对象
-4. 将活动对象添加到作用域链的前端，此时作用于链 `Scope = [AO].concat([[scope]]);`
+2. 变量对象变成活动对象，并执行代码给变量赋值
+3. 执行完毕，上下文从执行栈中弹出，其中的变量和函数定义也被销毁
 
 ## 作用域链
 查找变量的时候，会先从当前上下文的变量对象中找，没有则往父级的变量对象中找，一直到全局对象。这样由多个变量对象构成的链表就是作用域链。
+
+> 在定义函数的时候会用当前执行上下文中的作用域链来作为函数的内部属性 `[[scope]]`，执行函数之前，在创建执行上下文的时候就会复制这个 `[[scope]]` 来创建作用域链，之后会对这个作用域链进行补充，将自身的变量对象推入顶部。
 
 ## 执行上下文
 执行函数的时候会创建执行上下文，并压入 ECStack（execution context），执行完再弹出。栈底永远是 globalContext。
@@ -69,7 +165,12 @@ JavaScript 是词法作用域，函数的作用域在函数定义的时候确定
 进入该执行上下文时，变量对象变为活动对象，此时其中的变量可以访问。
 
 ### 执行上下文的创建
-此时变量对象包括：
+1. 复制 `[[scope]]` 创建作用域链
+2. 创建活动对象
+3. 将活动对象添加到作用域链的前端，此时作用域链 `Scope = [AO].concat([[scope]]);`
+4. 决定 this 指向
+   
+此时活动对象包括：
 1. 形参
 2. 函数声明：如果变量对象已经存在相同名称的属性，则完全替换这个属性
 3. 变量声明：如果变量名称跟已经声明的形式参数或函数相同，则变量声明不会干扰已经存在的这类属性
@@ -81,6 +182,15 @@ JavaScript 是词法作用域，函数的作用域在函数定义的时候确定
 ### reference
 [JavaScript深入之继承的多种方式和优缺点](https://github.com/mqyqingfeng/Blog/issues/16)
 
+## 事件流
+捕获：浏览器从元素最外层祖先（html）开始检查是否注册事件，是则运行，直至到达实际触发事件元素。
+
+冒泡：浏览器从实际触发事件元素开始检查是否注册事件，是则运行直至到达 html。
+
+两者的顺序：捕获 -> 处于目标 -> 冒泡。
+
+所以如果在父元素上绑定两种事件，会先触发父元素的捕获事件（true），再是冒泡事件（false）。但是子元素（就是触发事件的元素）触发事件的顺序是按 addEventListener 的注册先后来，因为这个时候和捕获冒泡无关，而是在处于目标阶段。
+  
 ## event loop
 由浏览器（JavaScript Runtime）维护。Runtime 负责函数的压栈和出栈，JS Engine 负责执行栈顶函数。
 
@@ -140,6 +250,9 @@ microtask 只有一个 queue。
 1. `Array.prototype.call(arrayLike, ...params)`
 2. `Array.from(arrayLike)`
 
+## Promise
+
+
 # React
 ## 对比vue
 React 是一个库而 Vue 是一个框架
@@ -186,6 +299,11 @@ https://www.yuque.com/kaisei/note/hbnmnw
 ## 渲染
 
 # 网络
+## OSI分层模型
+### 物理层
+主要以光、电等物理现象为载体实现信号的发射与接收，以传输比特流。
+4g、wifi……
+
 ## http
 ### 状态码
 * 101：协议升级
@@ -307,6 +425,59 @@ https：
 #### reference
 [HTTPS 协议降级攻击原理](https://zhuanlan.zhihu.com/p/22917510)
 
+# git
+## 撤销
+* 修改最后一次提交（可以添加更多改动到上一次的提交中，或者单纯只修改 message）
+  * 该提交不能是已发布的
+  * `git commit --amend -m "This is the correct message"`
+* 撤销本地改动（只 add 未 commit）
+  * 撤销特定文件：`git checkout -- file/to/restore.ext`
+  * 撤销所有本地改动：`git reset --hard HEAD`
+* 撤销已提交的改动（commit）
+  * 产生一个新的恢复原状 commit：`git revert 2b504be`
+  * 撤销 commit：`git reset --hard 2be18d9`
+    * 可以用 `git reflog` 找回 hash
+  * 撤销 commit 但是转换所有改动到工作区中：`git reset --keep 2be18d9`
+
+### 关于reset的参数
+仅在暂存区和工作区的数据上有所区别：
+* `--hard`
+  * 彻底回到之前的版本，丢失暂存区和工作区的数据
+* `--soft`
+  * 回退到commit之前，工作区和暂存区都还在
+* `--mixed`
+  * 默认行为
+  * 取消暂存所有东西，工作区还在
+
+### reference
+[撤销操作](https://www.git-tower.com/learn/git/ebook/cn/command-line/advanced-topics/undoing-things#start)
+
+## pull&fetch
+* pull
+  * 取回远程主机某个分支的更新，再与本地指定分支合并
+  * 相当于自动调用了 merge
+* fetch
+  * 取回远程主机上的更新，在 "远程主机名/分支名" 分支上
+  * 需要手动合并，使用merge或者rebase
+
+## 合并
+* `--no-ff`
+  * 关闭 fast-forward 模式，保留分支 commit 历史
+  * `fast-forward`：允许直接把 HEAD 指针指向合并分支的头，如果删除分支则会丢失分支信息，因为并没有 commit
+* `--squash`
+  * 合并的时候把另一个分支的多次 commit 压缩为一次，但不移动HEAD，需要手动提交一次完成合并
+
+### 撤销合并
+`git merge --abort`
+
+## rebase
+提取当前分支的修改，在新分支上应用一次。
+可以理解为是将当前分支的提交按原有次序应用到目标分支上，但是会丢失现有的提交，新建的提交虽然内容一样但实质上不同。
+并且每个提交的冲突都需要单独处理。
+
+### reference
+[rebase](https://www.git-tower.com/learn/git/ebook/cn/command-line/advanced-topics/rebase#start)
+
 # 实现
 ## call、apply
 ```js
@@ -387,3 +558,7 @@ https://mp.weixin.qq.com/s?__biz=MzUxMzcxMzE5Ng==&mid=2247489769&idx=1&sn=b22b3d
 
 ## 堆
 https://juejin.im/post/5c1ae6545188256a272a9cee
+
+## react思想
+https://segmentfault.com/a/1190000009075692
+https://segmentfault.com/a/1190000010401829
